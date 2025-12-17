@@ -1,4 +1,6 @@
-
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://res.cloudinary.com/dkpwmrjkq/image/upload/v1765959373/Screenshot_55_p2wzgs.png" />
+</div>
 
 # Frontend
 
