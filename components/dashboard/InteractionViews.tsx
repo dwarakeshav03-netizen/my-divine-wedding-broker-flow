@@ -4,10 +4,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, Heart, Star, Clock, Calendar, Eye, UserCheck, X, Check, 
   MessageCircle, MapPin, Filter, Search, ArrowRight, UserPlus, CheckCircle,
+<<<<<<< HEAD
   Sparkles, Send, Ban, Shield, Lock, Unlock, Inbox
 } from 'lucide-react';
 import { Profile, ActivityLog, Visitor } from '../../utils/mockData';
 import { MatchCard, EventCard } from './DashboardWidgets'; // Added EventCard import here if not already present in your setup, assumed shared widget
+=======
+  Sparkles, Send, Ban, Shield, Lock, Unlock
+} from 'lucide-react';
+import { Profile, ActivityLog, Visitor, MOCK_EVENTS } from '../../utils/mockData';
+import { MatchCard } from './DashboardWidgets';
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 import PremiumButton from '../ui/PremiumButton';
 
 // --- SHARED HEADER ---
@@ -22,7 +29,10 @@ const PageHeader: React.FC<{ title: string; subtitle: string; icon: React.ReactN
   </div>
 );
 
+<<<<<<< HEAD
 // ... ConnectionsView code remains unchanged ...
+=======
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- CONNECTIONS VIEW (Updated for Sent Requests Tracking) ---
 export const ConnectionsView: React.FC<{ 
   currentUserId?: string;
@@ -193,7 +203,10 @@ export const ConnectionsView: React.FC<{
   );
 };
 
+<<<<<<< HEAD
 // ... BlockedUsersView, InterestsView, ShortlistView, ActivityView remain unchanged ...
+=======
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- BLOCKED USERS VIEW ---
 export const BlockedUsersView: React.FC<{
     currentUserId?: string;
@@ -260,7 +273,11 @@ export const BlockedUsersView: React.FC<{
     );
 };
 
+<<<<<<< HEAD
 // ... InterestsView, ShortlistView, ActivityView code remains unchanged ...
+=======
+// ... InterestsView, ShortlistView, ActivityView, EventsView, VisitorsView (unchanged) ...
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- INTERESTS VIEW (UPDATED LOGIC) ---
 interface RelationshipItem {
     id: string;
@@ -372,7 +389,10 @@ export const InterestsView: React.FC<{
   );
 };
 
+<<<<<<< HEAD
 // ... ShortlistView code remains unchanged ...
+=======
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- SHORTLIST VIEW (UPDATED LOGIC) ---
 export const ShortlistView: React.FC<{ 
   currentUserId?: string;
@@ -480,7 +500,11 @@ export const ShortlistView: React.FC<{
   );
 };
 
+<<<<<<< HEAD
 // ... ActivityView code remains unchanged ...
+=======
+// --- ACTIVITY VIEW ---
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 export const ActivityView: React.FC<{ activityLog: ActivityLog[] }> = ({ activityLog }) => {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -528,6 +552,7 @@ export const ActivityView: React.FC<{ activityLog: ActivityLog[] }> = ({ activit
 
 // --- EVENTS VIEW ---
 export const EventsView: React.FC = () => {
+<<<<<<< HEAD
    const [events, setEvents] = useState<any[]>([]);
 
    useEffect(() => {
@@ -542,10 +567,13 @@ export const EventsView: React.FC = () => {
      return () => clearInterval(interval);
    }, []);
 
+=======
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
    return (
       <div className="space-y-8">
          <PageHeader title="Community Events" subtitle="Meetups, webinars, and gatherings." icon={<Calendar className="text-orange-500" size={32} />} />
          
+<<<<<<< HEAD
          {events.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-center text-gray-500">
                 <Inbox size={48} className="opacity-20 mb-4" />
@@ -564,11 +592,52 @@ export const EventsView: React.FC = () => {
                 ))}
             </div>
          )}
+=======
+         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {MOCK_EVENTS.map((event, idx) => (
+               <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
+                  className="bg-white dark:bg-[#121212] rounded-[2rem] overflow-hidden shadow-lg border border-gray-100 dark:border-white/5 group hover:shadow-2xl transition-all duration-500"
+               >
+                  <div className="h-48 overflow-hidden relative">
+                     <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                     <div className="absolute top-4 left-4 bg-white/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">
+                        {event.type}
+                     </div>
+                     <div className={`absolute top-4 right-4 px-3 py-1 rounded-lg text-xs font-bold text-white ${event.status === 'Upcoming' ? 'bg-green-500' : 'bg-gray-500'}`}>
+                        {event.status}
+                     </div>
+                  </div>
+                  <div className="p-6">
+                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{event.title}</h3>
+                     <div className="space-y-2 mb-6">
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                           <Calendar size={16} /> {event.date}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                           <MapPin size={16} /> {event.location}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                           <Users size={16} /> {event.attendees} Attending
+                        </div>
+                     </div>
+                     <PremiumButton width="full" variant={event.status === 'Upcoming' ? 'gradient' : 'secondary'}>
+                        {event.status === 'Upcoming' ? 'Register Now' : 'View Highlights'}
+                     </PremiumButton>
+                  </div>
+               </motion.div>
+            ))}
+         </div>
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       </div>
    );
 };
 
+<<<<<<< HEAD
 // ... VisitorsView code remains unchanged ...
+=======
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- VISITORS VIEW ---
 export const VisitorsView: React.FC<{ visitors: Visitor[] }> = ({ visitors }) => {
    return (

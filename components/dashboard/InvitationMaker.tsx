@@ -20,13 +20,24 @@ interface InvitationMakerProps {
 }
 
 // --- TEMPLATE GENERATION LOGIC ---
+<<<<<<< HEAD
 const CATEGORIES = ['Royal', 'Traditional', 'Modern', 'Floral', 'Vintage'];
 
+=======
+// Define categories and base styles
+const CATEGORIES = ['Royal', 'Traditional', 'Modern', 'Floral', 'Vintage'];
+
+// Generate 50+ Templates procedurally to ensure variety
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 const generateTemplates = () => {
   const templates = [];
   let idCounter = 1;
 
+<<<<<<< HEAD
   // 1. ROYAL
+=======
+  // 1. ROYAL (Deep colors, gold borders) - 10 Variations
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   const royalColors = ['bg-[#1a0b2e]', 'bg-[#2a0a18]', 'bg-[#0f172a]', 'bg-[#1e1b4b]', 'bg-[#310000]'];
   royalColors.forEach((bg, i) => {
     templates.push({
@@ -35,10 +46,23 @@ const generateTemplates = () => {
       fontFamily: 'font-display', textColor: 'text-yellow-100', accentColor: 'text-yellow-500',
       decoration: 'radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, transparent 70%)'
     });
+<<<<<<< HEAD
   });
   
   // 2. TRADITIONAL
   const tradColors = ['bg-red-900', 'bg-orange-800', 'bg-yellow-900', 'bg-red-800'];
+=======
+    templates.push({
+      id: `royal-${idCounter++}`, name: `Majestic ${i+1}`, category: 'Royal',
+      bgClass: bg, borderClass: 'border-[8px] border-yellow-600/50',
+      fontFamily: 'font-serif', textColor: 'text-yellow-50', accentColor: 'text-yellow-400',
+      decoration: 'linear-gradient(45deg, rgba(255,215,0,0.1) 25%, transparent 25%, transparent 50%, rgba(255,215,0,0.1) 50%, rgba(255,215,0,0.1) 75%, transparent 75%, transparent)'
+    });
+  });
+
+  // 2. TRADITIONAL (Reds, Oranges, Yellows) - 12 Variations
+  const tradColors = ['bg-red-900', 'bg-orange-800', 'bg-yellow-900', 'bg-red-800', 'bg-orange-900', 'bg-[#4a0404]'];
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   tradColors.forEach((bg, i) => {
      templates.push({
        id: `trad-${idCounter++}`, name: `Classic ${i+1}`, category: 'Traditional',
@@ -46,10 +70,23 @@ const generateTemplates = () => {
        fontFamily: 'font-serif', textColor: 'text-yellow-50', accentColor: 'text-yellow-300',
        decoration: 'repeating-linear-gradient(45deg, rgba(234, 179, 8, 0.05) 0px, rgba(234, 179, 8, 0.05) 2px, transparent 2px, transparent 10px)'
      });
+<<<<<<< HEAD
   });
 
   // 3. MODERN
   const modernColors = ['bg-white', 'bg-gray-50', 'bg-slate-50', 'bg-zinc-100'];
+=======
+     templates.push({
+        id: `trad-${idCounter++}`, name: `Heritage ${i+1}`, category: 'Traditional',
+        bgClass: bg, borderClass: 'border-[12px] border-double border-orange-400',
+        fontFamily: 'font-display', textColor: 'text-orange-100', accentColor: 'text-orange-400',
+        decoration: 'radial-gradient(circle at center, rgba(255,165,0,0.2) 0%, transparent 60%)'
+     });
+  });
+
+  // 3. MODERN (Clean, Minimal, Whites, Greys, Pastels) - 10 Variations
+  const modernColors = ['bg-white', 'bg-gray-50', 'bg-slate-50', 'bg-zinc-100', 'bg-stone-50'];
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   modernColors.forEach((bg, i) => {
      templates.push({
         id: `mod-${idCounter++}`, name: `Minimal ${i+1}`, category: 'Modern',
@@ -57,10 +94,23 @@ const generateTemplates = () => {
         fontFamily: 'font-sans', textColor: 'text-gray-900', accentColor: 'text-gray-500',
         decoration: ''
      });
+<<<<<<< HEAD
   });
 
   // 4. FLORAL
   const floralColors = ['bg-pink-50', 'bg-rose-50', 'bg-green-50', 'bg-emerald-50'];
+=======
+     templates.push({
+        id: `mod-${idCounter++}`, name: `Chic ${i+1}`, category: 'Modern',
+        bgClass: bg, borderClass: 'border-t-8 border-b-8 border-gray-900',
+        fontFamily: 'font-sans', textColor: 'text-gray-800', accentColor: 'text-gray-600',
+        decoration: 'linear-gradient(to bottom, rgba(0,0,0,0.02) 1px, transparent 1px)'
+     });
+  });
+
+  // 4. FLORAL (Pinks, Greens, Soft gradients) - 10 Variations
+  const floralColors = ['bg-pink-50', 'bg-rose-50', 'bg-green-50', 'bg-emerald-50', 'bg-purple-50'];
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   floralColors.forEach((bg, i) => {
      templates.push({
         id: `flor-${idCounter++}`, name: `Blossom ${i+1}`, category: 'Floral',
@@ -68,10 +118,23 @@ const generateTemplates = () => {
         fontFamily: 'font-serif', textColor: 'text-gray-800', accentColor: 'text-pink-600',
         decoration: 'radial-gradient(circle at top right, rgba(236, 72, 153, 0.1), transparent 40%), radial-gradient(circle at bottom left, rgba(34, 197, 94, 0.1), transparent 40%)'
      });
+<<<<<<< HEAD
   });
 
   // 5. VINTAGE
   const vintageColors = ['bg-[#f5f5dc]', 'bg-[#faebd7]', 'bg-[#fffdd0]', 'bg-[#eecfa1]'];
+=======
+     templates.push({
+        id: `flor-${idCounter++}`, name: `Garden ${i+1}`, category: 'Floral',
+        bgClass: bg, borderClass: 'border-4 border-double border-pink-200',
+        fontFamily: 'font-display', textColor: 'text-gray-700', accentColor: 'text-rose-500',
+        decoration: 'linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, transparent 100%)'
+     });
+  });
+
+  // 5. VINTAGE (Paper textures, Browns, Creams) - 10 Variations
+  const vintageColors = ['bg-[#f5f5dc]', 'bg-[#faebd7]', 'bg-[#fffdd0]', 'bg-[#eecfa1]', 'bg-[#d2b48c]'];
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   vintageColors.forEach((bg, i) => {
      templates.push({
         id: `vint-${idCounter++}`, name: `Retro ${i+1}`, category: 'Vintage',
@@ -79,6 +142,15 @@ const generateTemplates = () => {
         fontFamily: 'font-serif', textColor: 'text-stone-800', accentColor: 'text-stone-600',
         decoration: 'url("data:image/svg+xml,%3Csvg width=\'6\' height=\'6\' viewBox=\'0 0 6 6\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'0.05\' fill-rule=\'evenodd\'%3E%3Cpath d=\'M5 0h1L0 6V5zM6 5v1H5z\'/%3E%3C/g%3E%3C/svg%3E")'
      });
+<<<<<<< HEAD
+=======
+     templates.push({
+        id: `vint-${idCounter++}`, name: `Classic ${i+1}`, category: 'Vintage',
+        bgClass: bg, borderClass: 'border-8 border-double border-stone-800',
+        fontFamily: 'font-display', textColor: 'text-stone-900', accentColor: 'text-stone-700',
+        decoration: ''
+     });
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   });
 
   return templates;
@@ -93,7 +165,11 @@ const InvitationMaker: React.FC<InvitationMakerProps> = ({ onBack }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
+<<<<<<< HEAD
   const [showControls, setShowControls] = useState(true);
+=======
+  const [showControls, setShowControls] = useState(true); // For mobile toggle
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   
   // Content State
   const [content, setContent] = useState({
@@ -125,8 +201,14 @@ const InvitationMaker: React.FC<InvitationMakerProps> = ({ onBack }) => {
     setShowDownloadMenu(false);
 
     try {
+<<<<<<< HEAD
        const canvas = await window.html2canvas(canvasRef.current, {
           scale: 3, 
+=======
+       // Wait a tick for UI to be ready
+       const canvas = await window.html2canvas(canvasRef.current, {
+          scale: 3, // High resolution
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
           useCORS: true,
           backgroundColor: null,
           logging: false
@@ -197,7 +279,11 @@ const InvitationMaker: React.FC<InvitationMakerProps> = ({ onBack }) => {
 
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
         
+<<<<<<< HEAD
         {/* CONTROLS PANEL */}
+=======
+        {/* CONTROLS PANEL (Desktop Sidebar / Mobile Drawer) */}
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
         <div 
           className={`
             fixed inset-x-0 bottom-0 z-20 bg-white dark:bg-[#121212] border-t md:border-t-0 md:border-r border-gray-200 dark:border-white/5 flex flex-col shadow-2xl md:shadow-none transition-transform duration-300
@@ -304,6 +390,22 @@ const InvitationMaker: React.FC<InvitationMakerProps> = ({ onBack }) => {
                         ))}
                      </div>
                   </div>
+<<<<<<< HEAD
+=======
+                  
+                  <div>
+                     <label className="text-xs font-bold text-gray-600 dark:text-gray-300 mb-2 block">Background Texture</label>
+                     <div className="flex gap-2 flex-wrap">
+                        {['bg-white', 'bg-[#1a0b2e]', 'bg-red-900', 'bg-pink-50', 'bg-[#fffdd0]', 'bg-slate-900'].map(bg => (
+                           <button 
+                              key={bg}
+                              onClick={() => setSelectedTemplate(prev => ({...prev, bgClass: bg}))}
+                              className={`w-8 h-8 rounded-full border-2 ${bg} ${selectedTemplate.bgClass === bg ? 'border-purple-600 scale-110 shadow-lg' : 'border-gray-200'}`}
+                           />
+                        ))}
+                     </div>
+                  </div>
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                </div>
             )}
           </div>
@@ -312,7 +414,11 @@ const InvitationMaker: React.FC<InvitationMakerProps> = ({ onBack }) => {
         {/* CENTER: CANVAS */}
         <div className="flex-1 bg-gray-100 dark:bg-[#0a0a0a] relative flex items-center justify-center p-4 md:p-8 overflow-auto" onClick={() => setShowControls(false)}>
            {/* Canvas Container with ID for Capture */}
+<<<<<<< HEAD
            <div className="relative shadow-2xl transition-all duration-500 transform scale-[0.5] xs:scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-100 origin-center">
+=======
+           <div className="relative shadow-2xl transition-all duration-500 transform scale-[0.65] xs:scale-[0.75] md:scale-100 origin-center">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
               <motion.div 
                  id="invitation-card"
                  ref={canvasRef}
@@ -331,6 +437,7 @@ const InvitationMaker: React.FC<InvitationMakerProps> = ({ onBack }) => {
                  <div className="absolute bottom-4 left-4 w-16 h-16 border-b-2 border-l-2 opacity-50 border-current pointer-events-none" />
                  <div className="absolute bottom-4 right-4 w-16 h-16 border-b-2 border-r-2 opacity-50 border-current pointer-events-none" />
 
+<<<<<<< HEAD
                  {/* Content */}
                  <div className="relative w-full h-full flex flex-col justify-center gap-6">
                     
@@ -339,23 +446,45 @@ const InvitationMaker: React.FC<InvitationMakerProps> = ({ onBack }) => {
                     </motion.div>
 
                     <motion.div drag dragMomentum={false} className="cursor-move" style={{ x: positions.names.x, y: positions.names.y }}>
+=======
+                 {/* Draggable Content */}
+                 <div className="relative w-full h-full">
+                    
+                    <motion.div drag dragMomentum={false} className="absolute inset-x-0 top-6 md:top-10 cursor-move" style={{ x: positions.title.x, y: positions.title.y }}>
+                       <h4 className={`text-xs md:text-sm uppercase tracking-[0.3em] ${currentTheme.accentColor}`}>The Wedding Of</h4>
+                    </motion.div>
+
+                    <motion.div drag dragMomentum={false} className="absolute inset-x-0 top-16 md:top-24 cursor-move" style={{ x: positions.names.x, y: positions.names.y }}>
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                        <h1 className="text-3xl md:text-4xl font-bold leading-tight">
                           {content.groom} <br/> <span className={`text-xl md:text-2xl ${currentTheme.accentColor}`}>&</span> <br/> {content.bride}
                        </h1>
                     </motion.div>
 
+<<<<<<< HEAD
                     <motion.div drag dragMomentum={false} className="cursor-move px-4" style={{ x: positions.message.x, y: positions.message.y }}>
                        <p className="text-xs md:text-sm opacity-90 italic leading-relaxed">{content.message}</p>
                     </motion.div>
 
                     <motion.div drag dragMomentum={false} className="cursor-move" style={{ x: positions.details.x, y: positions.details.y }}>
+=======
+                    <motion.div drag dragMomentum={false} className="absolute inset-x-0 top-48 md:top-60 cursor-move px-4" style={{ x: positions.message.x, y: positions.message.y }}>
+                       <p className="text-xs md:text-sm opacity-90 italic leading-relaxed">{content.message}</p>
+                    </motion.div>
+
+                    <motion.div drag dragMomentum={false} className="absolute inset-x-0 bottom-24 md:bottom-32 cursor-move" style={{ x: positions.details.x, y: positions.details.y }}>
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                        <div className="space-y-1 md:space-y-2">
                           <p className={`text-base md:text-lg font-bold ${currentTheme.accentColor}`}>{content.date} • {content.time}</p>
                           <p className="text-xs md:text-sm font-medium px-4">{content.venue}</p>
                        </div>
                     </motion.div>
 
+<<<<<<< HEAD
                     <motion.div drag dragMomentum={false} className="cursor-move" style={{ x: positions.rsvp.x, y: positions.rsvp.y }}>
+=======
+                    <motion.div drag dragMomentum={false} className="absolute inset-x-0 bottom-8 md:bottom-10 cursor-move" style={{ x: positions.rsvp.x, y: positions.rsvp.y }}>
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                        <p className="text-[10px] md:text-xs uppercase tracking-widest opacity-70">{content.rsvp}</p>
                     </motion.div>
 

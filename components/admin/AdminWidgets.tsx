@@ -4,7 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, Users, Shield, LogOut, Search, Sun, Moon, 
   Bell, CheckCircle, Clock, UserPlus, Settings, Heart, Palette,
+<<<<<<< HEAD
   FileText, DollarSign, Flag, Headphones, Menu, X, MessageSquare, Calendar
+=======
+  FileText, DollarSign, Flag, Headphones, Menu, X, MessageSquare
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 } from 'lucide-react';
 import Logo from '../ui/Logo';
 import useTranslation from '../../hooks/useTranslation';
@@ -37,11 +41,18 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentView, onChang
   const fullMenu = [
     { 
         section: t('admin.workspace'), 
+<<<<<<< HEAD
         requiredPermissions: ['new-accounts', 'user-database', 'events'],
         items: [
             { id: 'new-accounts', label: t('admin.newAccounts'), icon: UserPlus, badge: 'High Priority', perm: 'new-accounts' },
             { id: 'user-database', label: t('admin.userDb'), icon: Users, perm: 'user-database' },
             { id: 'events', label: 'Event Management', icon: Calendar, perm: 'events' },
+=======
+        requiredPermissions: ['new-accounts', 'user-database'],
+        items: [
+            { id: 'new-accounts', label: t('admin.newAccounts'), icon: UserPlus, badge: 'High Priority', perm: 'new-accounts' },
+            { id: 'user-database', label: t('admin.userDb'), icon: Users, perm: 'user-database' },
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
         ]
     },
     { 
@@ -251,8 +262,12 @@ export const KpiCard: React.FC<{
   trend: string; 
   icon: React.ReactNode; 
   color: string; 
+<<<<<<< HEAD
   onClick?: () => void;
 }> = ({ title, value, trend, icon, color, onClick }) => {
+=======
+}> = ({ title, value, trend, icon, color }) => {
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   // Styles (same as before)
   const getColorStyles = (c: string) => {
     if (c.includes('green')) return 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400';
@@ -267,8 +282,12 @@ export const KpiCard: React.FC<{
   return (
     <motion.div 
       whileHover={{ y: -5 }}
+<<<<<<< HEAD
       onClick={onClick}
       className="bg-white dark:bg-[#121212] p-6 rounded-[2rem] border border-gray-200 dark:border-white/5 shadow-sm flex flex-col justify-between group h-full cursor-pointer"
+=======
+      className="bg-white dark:bg-[#121212] p-6 rounded-[2rem] border border-gray-200 dark:border-white/5 shadow-sm flex flex-col justify-between group h-full"
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
     >
       <div className="flex justify-between items-start mb-4">
         <div className={`p-3 rounded-2xl ${getColorStyles(color)}`}>

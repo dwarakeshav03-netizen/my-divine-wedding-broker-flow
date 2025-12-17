@@ -23,7 +23,10 @@ interface SuperAdminDashboardProps {
 const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) => {
   const [currentView, setCurrentView] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+<<<<<<< HEAD
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+=======
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 
   // Super Admin Menu
   const menuItems = [
@@ -38,7 +41,11 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
   const renderContent = () => {
     switch (currentView) {
       case 'overview': return <SuperAdminOverview onChangeView={setCurrentView} />;
+<<<<<<< HEAD
       case 'users': return <AdminUserManagement initialTab="all" lockTab={false} />; 
+=======
+      case 'users': return <AdminUserManagement initialTab="all" lockTab={false} />; // Super Admin sees all, can filter
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       case 'reports': return <AdminReports />;
       case 'admins': return <AdminManager />;
       case 'transactions': return <AdminPayments />;
@@ -47,24 +54,43 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
     }
   };
 
+<<<<<<< HEAD
   const SidebarContent = () => (
      <div className="flex flex-col h-full bg-[#12131c] border-r border-white/5 relative">
+=======
+  return (
+    <div className="flex h-screen bg-[#0b0c15] text-white font-sans selection:bg-yellow-500/30 overflow-hidden">
+      
+      {/* SIDEBAR */}
+      <motion.aside 
+        initial={{ width: 280 }}
+        animate={{ width: sidebarOpen ? 280 : 80 }}
+        className="hidden md:flex flex-col bg-[#12131c] border-r border-white/5 z-30 shadow-2xl relative h-full"
+      >
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
          {/* Logo Area */}
          <div className="h-24 flex items-center px-6 border-b border-white/5 bg-gradient-to-r from-[#12131c] to-[#1a1b26] shrink-0">
             <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-amber-700 rounded-xl flex items-center justify-center text-black shrink-0 shadow-lg shadow-yellow-500/20">
                <Crown size={24} fill="black" />
             </div>
+<<<<<<< HEAD
             {(sidebarOpen || mobileMenuOpen) && (
+=======
+            {sidebarOpen && (
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="ml-3">
                   <h1 className="font-display font-bold text-lg text-yellow-500 tracking-wide">DIVINE</h1>
                   <p className="text-[9px] text-gray-400 uppercase tracking-[0.2em] font-bold">Governance</p>
                </motion.div>
             )}
+<<<<<<< HEAD
             {mobileMenuOpen && (
                <button onClick={() => setMobileMenuOpen(false)} className="ml-auto p-2 text-gray-400 hover:text-white md:hidden">
                   <X size={20} />
                </button>
             )}
+=======
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
          </div>
 
          {/* Navigation */}
@@ -72,10 +98,14 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
             {menuItems.map((item) => (
                <button
                   key={item.id}
+<<<<<<< HEAD
                   onClick={() => {
                      setCurrentView(item.id);
                      setMobileMenuOpen(false);
                   }}
+=======
+                  onClick={() => setCurrentView(item.id)}
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                   className={`w-full flex items-center gap-4 px-4 py-4 rounded-xl text-sm font-bold transition-all group relative overflow-hidden ${
                      currentView === item.id 
                      ? 'bg-gradient-to-r from-yellow-600/20 to-transparent text-yellow-400 border-l-4 border-yellow-500' 
@@ -83,7 +113,11 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
                   }`}
                >
                   <item.icon size={20} className={currentView === item.id ? 'text-yellow-500' : 'text-gray-500 group-hover:text-gray-300'} />
+<<<<<<< HEAD
                   {(sidebarOpen || mobileMenuOpen) && <span className="relative z-10">{item.label}</span>}
+=======
+                  {sidebarOpen && <span className="relative z-10">{item.label}</span>}
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                   {currentView === item.id && <div className="absolute inset-0 bg-yellow-500/5 z-0" />}
                </button>
             ))}
@@ -96,6 +130,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-500/10 font-bold transition-colors border border-transparent hover:border-red-500/20"
             >
                <LogOut size={20} />
+<<<<<<< HEAD
                {(sidebarOpen || mobileMenuOpen) && <span>Secure Logout</span>}
             </button>
          </div>
@@ -149,10 +184,30 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
                   <h2 className="text-xl md:text-2xl font-display font-bold text-white capitalize">{currentView.replace('-', ' ')}</h2>
                   <p className="text-[10px] md:text-xs text-gray-500 flex items-center gap-2">
                      <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse" /> System Secure
+=======
+               {sidebarOpen && <span>Secure Logout</span>}
+            </button>
+         </div>
+      </motion.aside>
+
+      {/* MAIN CONTENT */}
+      <div className="flex-1 flex flex-col min-w-0 bg-[#0b0c15] relative h-full">
+         {/* Top Header */}
+         <header className="h-24 flex items-center justify-between px-8 border-b border-white/5 bg-[#0b0c15]/90 backdrop-blur-xl sticky top-0 z-20 shrink-0">
+            <div className="flex items-center gap-4">
+               <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 text-gray-400 hover:text-white transition-colors">
+                  {sidebarOpen ? <Menu className="rotate-90" /> : <Menu />}
+               </button>
+               <div>
+                  <h2 className="text-2xl font-display font-bold text-white capitalize">{currentView.replace('-', ' ')}</h2>
+                  <p className="text-xs text-gray-500 flex items-center gap-2">
+                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> System Secure & Encrypted
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                   </p>
                </div>
             </div>
 
+<<<<<<< HEAD
             <div className="flex items-center gap-4 md:gap-6">
                <div className="hidden lg:flex items-center gap-3 bg-[#151621] px-4 py-2 rounded-full border border-white/5">
                   <Globe size={14} className="text-gray-500" />
@@ -165,6 +220,20 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
                      <p className="text-[10px] text-gray-500 uppercase tracking-wider">Level 1</p>
                   </div>
                   <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-yellow-500 flex items-center justify-center text-black font-bold shadow-lg shadow-yellow-500/20">
+=======
+            <div className="flex items-center gap-6">
+               <div className="hidden md:flex items-center gap-3 bg-[#151621] px-4 py-2 rounded-full border border-white/5">
+                  <Globe size={14} className="text-gray-500" />
+                  <span className="text-xs font-mono text-gray-300">192.168.1.1 (HQ)</span>
+               </div>
+               <div className="w-px h-8 bg-white/10" />
+               <div className="flex items-center gap-3">
+                  <div className="text-right">
+                     <p className="text-sm font-bold text-yellow-500">Super Admin</p>
+                     <p className="text-[10px] text-gray-500 uppercase tracking-wider">Level 1 Clearance</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-black font-bold shadow-lg shadow-yellow-500/20">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                      SA
                   </div>
                </div>
@@ -172,7 +241,11 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
          </header>
 
          {/* Content Scroll Area */}
+<<<<<<< HEAD
          <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+=======
+         <main className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
             <AnimatePresence mode="wait">
                <motion.div
                   key={currentView}

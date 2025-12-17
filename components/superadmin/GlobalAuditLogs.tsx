@@ -49,20 +49,33 @@ const GlobalAuditLogs: React.FC = () => {
   return (
     <div className="h-full flex flex-col space-y-6">
        
+<<<<<<< HEAD
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#151621] p-6 rounded-[2rem] border border-white/5">
+=======
+       <div className="flex justify-between items-center bg-[#151621] p-6 rounded-[2rem] border border-white/5">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
           <div>
              <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <FileText className="text-yellow-500" /> Immutable Audit Trail
              </h2>
              <p className="text-sm text-gray-500 mt-1">Read-only record of all administrative actions.</p>
           </div>
+<<<<<<< HEAD
           <button className="w-full md:w-auto px-4 py-2 border border-white/10 rounded-xl text-gray-400 text-sm font-bold hover:bg-white/5 hover:text-white flex items-center justify-center gap-2 transition-colors">
+=======
+          <button className="px-4 py-2 border border-white/10 rounded-xl text-gray-400 text-sm font-bold hover:bg-white/5 hover:text-white flex items-center gap-2 transition-colors">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
              <Download size={16} /> Export Logs
           </button>
        </div>
 
+<<<<<<< HEAD
        <div className="bg-[#151621] border border-white/5 rounded-[2rem] overflow-hidden flex flex-col">
           <div className="p-4 border-b border-white/5 flex flex-col md:flex-row gap-4">
+=======
+       <div className="flex-1 bg-[#151621] border border-white/5 rounded-[2rem] overflow-hidden flex flex-col">
+          <div className="p-4 border-b border-white/5 flex gap-4">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
              <div className="relative flex-1">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                 <input 
@@ -73,12 +86,21 @@ const GlobalAuditLogs: React.FC = () => {
                    className="w-full bg-[#0b0c15] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white outline-none focus:border-yellow-500/50 transition-colors" 
                 />
              </div>
+<<<<<<< HEAD
              <button className="p-2.5 bg-[#0b0c15] border border-white/10 rounded-xl text-gray-500 hover:text-white transition-colors w-full md:w-auto flex items-center justify-center gap-2 md:block">
                 <Filter size={18} /> <span className="md:hidden text-sm font-bold">Filters</span>
              </button>
           </div>
           
           <div className="flex-1 relative h-[85vh] min-h-[600px] overflow-hidden">
+=======
+             <button className="p-2.5 bg-[#0b0c15] border border-white/10 rounded-xl text-gray-500 hover:text-white transition-colors">
+                <Filter size={18} />
+             </button>
+          </div>
+          
+          <div className="flex-1 overflow-hidden">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
              <AdminTable 
                 data={filteredLogs}
                 columns={columns}

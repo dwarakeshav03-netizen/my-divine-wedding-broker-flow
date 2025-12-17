@@ -15,9 +15,23 @@ const AdminManager: React.FC = () => {
   const [admins, setAdmins] = useState<SystemAdmin[]>(MOCK_SYSTEM_ADMINS);
   const [selectedAdmin, setSelectedAdmin] = useState<SystemAdmin | null>(null);
   const [actionType, setActionType] = useState<'Block' | 'Suspend' | 'Activate' | null>(null);
+<<<<<<< HEAD
   const [modalView, setModalView] = useState<'details' | 'logs'>('details');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newAdminData, setNewAdminData] = useState({ name: '', email: '', role: 'Support' });
+=======
+  
+  // View State for Modal
+  const [modalView, setModalView] = useState<'details' | 'logs'>('details');
+
+  // Create Admin State
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newAdminData, setNewAdminData] = useState({
+     name: '',
+     email: '',
+     role: 'Support'
+  });
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 
   // Load from LS
   useEffect(() => {
@@ -29,11 +43,19 @@ const AdminManager: React.FC = () => {
      }
   }, []);
 
+<<<<<<< HEAD
   // ... (rest of the logic: updateAdminStatus, handleCreateAdmin, getAdminLogs remain same) ...
+=======
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   const updateAdminStatus = (id: string, newStatus: SystemAdmin['status']) => {
      const updated = admins.map(a => a.id === id ? { ...a, status: newStatus } : a);
      setAdmins(updated);
      localStorage.setItem('mdm_system_admins', JSON.stringify(updated));
+<<<<<<< HEAD
+=======
+     
+     // Log the action
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
      const log = {
         id: `GAL-${Date.now()}`,
         actorId: 'SA-001', actorName: 'Super Admin', actorRole: 'Super Admin',
@@ -42,12 +64,20 @@ const AdminManager: React.FC = () => {
      };
      const logs = JSON.parse(localStorage.getItem('mdm_super_admin_logs') || '[]');
      localStorage.setItem('mdm_super_admin_logs', JSON.stringify([log, ...logs]));
+<<<<<<< HEAD
+=======
+
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
      setActionType(null);
      setSelectedAdmin(null);
   };
 
   const handleCreateAdmin = () => {
      if(!newAdminData.name || !newAdminData.email) return;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
      const newAdmin: SystemAdmin = {
         id: `ADM-${Math.floor(Math.random() * 1000)}`,
         name: newAdminData.name,
@@ -57,11 +87,22 @@ const AdminManager: React.FC = () => {
         lastLogin: 'Never',
         actionsCount: 0,
         avatar: `https://ui-avatars.com/api/?name=${newAdminData.name.replace(/\s/g, '+')}&background=random`,
+<<<<<<< HEAD
         permissions: []
      };
      const updatedList = [newAdmin, ...admins];
      setAdmins(updatedList);
      localStorage.setItem('mdm_system_admins', JSON.stringify(updatedList));
+=======
+        permissions: [] // Logic to set perms based on role can be added here
+     };
+
+     const updatedList = [newAdmin, ...admins];
+     setAdmins(updatedList);
+     localStorage.setItem('mdm_system_admins', JSON.stringify(updatedList));
+
+     // Log creation
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
      const log = {
         id: `GAL-${Date.now()}`,
         actorId: 'SA-001', actorName: 'Super Admin', actorRole: 'Super Admin',
@@ -70,17 +111,35 @@ const AdminManager: React.FC = () => {
      };
      const logs = JSON.parse(localStorage.getItem('mdm_super_admin_logs') || '[]');
      localStorage.setItem('mdm_super_admin_logs', JSON.stringify([log, ...logs]));
+<<<<<<< HEAD
+=======
+
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
      setShowCreateModal(false);
      setNewAdminData({ name: '', email: '', role: 'Support' });
      alert(`Admin Credential Created.\n\nUser: ${newAdmin.email}\nPass: secure123 (Default)`);
   };
 
+<<<<<<< HEAD
   const getAdminLogs = (adminId: string, adminName: string) => {
       const storedLogs = JSON.parse(localStorage.getItem('mdm_approval_logs') || '[]');
       const globalLogs = JSON.parse(localStorage.getItem('mdm_super_admin_logs') || '[]');
       const approvalActs = storedLogs.filter((l: any) => l.adminName === adminName || l.adminId === adminId);
       const globalActs = globalLogs.filter((l: any) => l.actorId === adminId || l.actorName === adminName);
       const mockActs = MOCK_GLOBAL_AUDIT_LOGS.filter(l => l.actorId === adminId || l.actorName === adminName);
+=======
+  // Get logs for specific admin
+  const getAdminLogs = (adminId: string, adminName: string) => {
+      // Fetch both from MOCK and LocalStorage
+      const storedLogs = JSON.parse(localStorage.getItem('mdm_approval_logs') || '[]');
+      const globalLogs = JSON.parse(localStorage.getItem('mdm_super_admin_logs') || '[]'); // Contains mixed
+      
+      // Filter logs where this admin is the ACTOR
+      const approvalActs = storedLogs.filter((l: any) => l.adminName === adminName || l.adminId === adminId);
+      const globalActs = globalLogs.filter((l: any) => l.actorId === adminId || l.actorName === adminName);
+      const mockActs = MOCK_GLOBAL_AUDIT_LOGS.filter(l => l.actorId === adminId || l.actorName === adminName);
+      
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       return [...approvalActs, ...globalActs, ...mockActs].sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   };
 
@@ -114,7 +173,11 @@ const AdminManager: React.FC = () => {
   return (
     <div className="h-full flex flex-col space-y-6">
        {/* Header */}
+<<<<<<< HEAD
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#151621] p-6 rounded-[2rem] border border-white/5">
+=======
+       <div className="flex justify-between items-center bg-[#151621] p-6 rounded-[2rem] border border-white/5">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
           <div>
              <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <Users className="text-blue-500" /> Admin Management
@@ -123,13 +186,18 @@ const AdminManager: React.FC = () => {
           </div>
           <button 
             onClick={() => setShowCreateModal(true)}
+<<<<<<< HEAD
             className="w-full md:w-auto px-4 py-2 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl text-sm flex items-center justify-center gap-2 transition-colors shadow-lg shadow-yellow-500/20"
+=======
+            className="px-4 py-2 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl text-sm flex items-center gap-2 transition-colors shadow-lg shadow-yellow-500/20"
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
           >
              <Plus size={18} /> Add New Admin
           </button>
        </div>
 
        {/* Admin List */}
+<<<<<<< HEAD
        <div className="bg-[#151621] border border-white/5 rounded-[2rem] overflow-hidden flex flex-col">
           <div className="p-4 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
              <div className="relative w-full md:w-64">
@@ -142,6 +210,18 @@ const AdminManager: React.FC = () => {
           </div>
 
           <div className="flex-1 relative h-[85vh] min-h-[600px] overflow-hidden">
+=======
+       <div className="flex-1 bg-[#151621] border border-white/5 rounded-[2rem] overflow-hidden flex flex-col">
+          <div className="p-4 border-b border-white/5 flex justify-between items-center">
+             <div className="relative w-64">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input type="text" placeholder="Search admins..." className="w-full bg-[#0b0c15] border border-white/10 rounded-xl pl-9 pr-4 py-2 text-sm text-white outline-none focus:border-yellow-500/50 transition-colors" />
+             </div>
+             <button className="p-2 text-gray-500 hover:text-white transition-colors"><Filter size={18} /></button>
+          </div>
+
+          <div className="flex-1 overflow-hidden">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
              <AdminTable 
                 data={admins}
                 columns={columns}
@@ -180,8 +260,23 @@ const AdminManager: React.FC = () => {
 
                     {/* Tabs */}
                     <div className="flex p-2 gap-2 border-b border-white/5 bg-[#151621]">
+<<<<<<< HEAD
                         <button onClick={() => setModalView('details')} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${modalView === 'details' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}`}>Overview</button>
                         <button onClick={() => setModalView('logs')} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${modalView === 'logs' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}`}>Activity Logs</button>
+=======
+                        <button 
+                            onClick={() => setModalView('details')} 
+                            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${modalView === 'details' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                        >
+                            Overview
+                        </button>
+                        <button 
+                            onClick={() => setModalView('logs')} 
+                            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${modalView === 'logs' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                        >
+                            Activity Logs
+                        </button>
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                     </div>
 
                     {/* Content */}
@@ -230,7 +325,13 @@ const AdminManager: React.FC = () => {
                                 ) : (
                                     getAdminLogs(selectedAdmin.id, selectedAdmin.name).map((log: any, i: number) => (
                                         <div key={i} className="flex items-start gap-3 p-3 bg-[#0b0c15] rounded-xl border border-white/5">
+<<<<<<< HEAD
                                             <div className="p-2 bg-white/5 rounded-lg text-gray-400 mt-0.5"><Activity size={14} /></div>
+=======
+                                            <div className="p-2 bg-white/5 rounded-lg text-gray-400 mt-0.5">
+                                                <Activity size={14} />
+                                            </div>
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                                             <div className="flex-1">
                                                 <p className="text-sm font-bold text-gray-200">{log.action}</p>
                                                 <p className="text-xs text-gray-500">Target: {log.targetName || log.target}</p>
@@ -260,12 +361,27 @@ const AdminManager: React.FC = () => {
                    </div>
                    <h3 className="text-xl font-bold text-white mb-2">{actionType} {selectedAdmin.name}?</h3>
                    <p className="text-gray-400 text-sm mb-8">
+<<<<<<< HEAD
                       {actionType === 'Block' ? "This will immediately revoke all access tokens. The admin will be logged out from all active sessions." : "User will be temporarily disabled until manually reactivated."}
+=======
+                      {actionType === 'Block' 
+                         ? "This will immediately revoke all access tokens. The admin will be logged out from all active sessions." 
+                         : "User will be temporarily disabled until manually reactivated."}
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                    </p>
                    
                    <div className="flex gap-3">
                       <button onClick={() => setActionType(null)} className="flex-1 py-3 rounded-xl border border-white/10 text-gray-400 font-bold text-sm hover:bg-white/5 transition-colors">Cancel</button>
+<<<<<<< HEAD
                       <button onClick={() => updateAdminStatus(selectedAdmin.id, actionType === 'Block' ? 'Blocked' : 'Suspended')} className={`flex-1 py-3 rounded-xl font-bold text-sm text-black ${actionType === 'Block' ? 'bg-red-500 hover:bg-red-400' : 'bg-amber-500 hover:bg-amber-400'}`}>Confirm {actionType}</button>
+=======
+                      <button 
+                         onClick={() => updateAdminStatus(selectedAdmin.id, actionType === 'Block' ? 'Blocked' : 'Suspended')}
+                         className={`flex-1 py-3 rounded-xl font-bold text-sm text-black ${actionType === 'Block' ? 'bg-red-500 hover:bg-red-400' : 'bg-amber-500 hover:bg-amber-400'}`}
+                      >
+                         Confirm {actionType}
+                      </button>
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                    </div>
                 </motion.div>
              </div>
@@ -284,17 +400,84 @@ const AdminManager: React.FC = () => {
                       <h3 className="text-xl font-bold text-white">Create Admin Credentials</h3>
                       <button onClick={() => setShowCreateModal(false)} className="text-gray-500 hover:text-white"><X size={20} /></button>
                    </div>
+<<<<<<< HEAD
                    <div className="space-y-4">
                       <div className="space-y-2"><label className="text-xs font-bold text-gray-400 uppercase">Full Name</label><div className="relative"><User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" /><input type="text" value={newAdminData.name} onChange={e => setNewAdminData({...newAdminData, name: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white text-sm outline-none focus:border-yellow-500" placeholder="e.g. John Doe" /></div></div>
                       <div className="space-y-2"><label className="text-xs font-bold text-gray-400 uppercase">Email Address</label><div className="relative"><Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" /><input type="email" value={newAdminData.email} onChange={e => setNewAdminData({...newAdminData, email: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white text-sm outline-none focus:border-yellow-500" placeholder="admin@divine.com" /></div></div>
                       <div className="space-y-2"><label className="text-xs font-bold text-gray-400 uppercase">Role Assignment</label><select value={newAdminData.role} onChange={e => setNewAdminData({...newAdminData, role: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white text-sm outline-none focus:border-yellow-500 appearance-none"><option value="Admin">Admin (Full Access)</option><option value="Moderator">Moderator (Content & Reports)</option><option value="Support">Support (Tickets & Users)</option><option value="Finance">Finance (Payments Only)</option></select></div>
                       <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl mt-4"><div className="flex items-center gap-2 text-yellow-500 text-xs font-bold mb-1"><Key size={14} /> Default Password</div><p className="text-xs text-yellow-200/70">The user will be assigned a temporary password: <span className="font-mono text-white">secure123</span></p></div>
                       <PremiumButton onClick={handleCreateAdmin} className="w-full mt-4" variant="gradient">Create Account</PremiumButton>
+=======
+                   
+                   <div className="space-y-4">
+                      <div className="space-y-2">
+                          <label className="text-xs font-bold text-gray-400 uppercase">Full Name</label>
+                          <div className="relative">
+                              <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                              <input 
+                                 type="text" 
+                                 value={newAdminData.name}
+                                 onChange={e => setNewAdminData({...newAdminData, name: e.target.value})}
+                                 className="w-full bg-black/30 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white text-sm outline-none focus:border-yellow-500"
+                                 placeholder="e.g. John Doe"
+                              />
+                          </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                          <label className="text-xs font-bold text-gray-400 uppercase">Email Address</label>
+                          <div className="relative">
+                              <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                              <input 
+                                 type="email" 
+                                 value={newAdminData.email}
+                                 onChange={e => setNewAdminData({...newAdminData, email: e.target.value})}
+                                 className="w-full bg-black/30 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white text-sm outline-none focus:border-yellow-500"
+                                 placeholder="admin@divine.com"
+                              />
+                          </div>
+                      </div>
+
+                      <div className="space-y-2">
+                          <label className="text-xs font-bold text-gray-400 uppercase">Role Assignment</label>
+                          <select 
+                             value={newAdminData.role}
+                             onChange={e => setNewAdminData({...newAdminData, role: e.target.value})}
+                             className="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white text-sm outline-none focus:border-yellow-500 appearance-none"
+                          >
+                             <option value="Admin">Admin (Full Access)</option>
+                             <option value="Moderator">Moderator (Content & Reports)</option>
+                             <option value="Support">Support (Tickets & Users)</option>
+                             <option value="Finance">Finance (Payments Only)</option>
+                          </select>
+                      </div>
+
+                      <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl mt-4">
+                          <div className="flex items-center gap-2 text-yellow-500 text-xs font-bold mb-1">
+                             <Key size={14} /> Default Password
+                          </div>
+                          <p className="text-xs text-yellow-200/70">
+                             The user will be assigned a temporary password: <span className="font-mono text-white">secure123</span>
+                          </p>
+                      </div>
+
+                      <PremiumButton 
+                         onClick={handleCreateAdmin} 
+                         className="w-full mt-4" 
+                         variant="gradient"
+                      >
+                         Create Account
+                      </PremiumButton>
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                    </div>
                 </motion.div>
              </div>
           )}
        </AnimatePresence>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
     </div>
   );
 };

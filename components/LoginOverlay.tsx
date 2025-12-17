@@ -59,7 +59,11 @@ const LoginOverlay: React.FC<LoginOverlayProps> = ({ isOpen, onClose, onSwitchTo
   if (!isOpen) return null;
 
   return (
+<<<<<<< HEAD
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+=======
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       {/* Backdrop */}
       <M.div 
         initial={{ opacity: 0 }} 
@@ -159,7 +163,10 @@ const LoginOverlay: React.FC<LoginOverlayProps> = ({ isOpen, onClose, onSwitchTo
   );
 };
 
+<<<<<<< HEAD
 // ... Rest of the file (PhoneLoginView, OtpVerifyView, EmailLoginView, SuccessTransition) remains unchanged ...
+=======
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- VIEW 1: PHONE INPUT ---
 const PhoneLoginView: React.FC<{ 
   mobile: string, setMobile: (v: string) => void, 

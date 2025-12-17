@@ -71,14 +71,24 @@ export function AdminTable<T extends { id: string }>({
   };
 
   return (
+<<<<<<< HEAD
     <div className="bg-white dark:bg-[#151515] border border-gray-200 dark:border-white/5 rounded-2xl shadow-sm overflow-hidden flex flex-col w-full h-full max-w-full">
+=======
+    <div className="bg-white dark:bg-[#151515] border border-gray-200 dark:border-white/5 rounded-2xl shadow-sm overflow-hidden flex flex-col w-full h-full">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       {/* Table Header Controls */}
       <div className="p-5 border-b border-gray-200 dark:border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0 bg-white dark:bg-[#151515]">
         {title && <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>}
         
+<<<<<<< HEAD
         <div className="flex items-center gap-3 w-full sm:w-auto overflow-x-auto hide-scrollbar">
           {enableSearch && (
             <div className="relative flex-1 sm:flex-none min-w-[200px]">
+=======
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          {enableSearch && (
+            <div className="relative flex-1 sm:flex-none">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input 
                 type="text" 
@@ -90,12 +100,20 @@ export function AdminTable<T extends { id: string }>({
             </div>
           )}
           {enableSearch && (
+<<<<<<< HEAD
             <button className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg text-gray-500 transition-colors shrink-0">
+=======
+            <button className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg text-gray-500 transition-colors">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
               <Filter size={18} />
             </button>
           )}
           {enableExport && (
+<<<<<<< HEAD
             <button className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg text-gray-500 transition-colors shrink-0">
+=======
+            <button className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg text-gray-500 transition-colors">
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
               <Download size={18} />
             </button>
           )}
@@ -115,6 +133,7 @@ export function AdminTable<T extends { id: string }>({
         </div>
       )}
 
+<<<<<<< HEAD
       {/* Table Container - Critical for Responsive Table */}
       <div className="flex-1 w-full overflow-hidden relative bg-gray-50/50 dark:bg-[#121212]">
          <div className="absolute inset-0 overflow-auto custom-scrollbar">
@@ -194,6 +213,86 @@ export function AdminTable<T extends { id: string }>({
       </div>
 
       {/* Pagination */}
+=======
+      {/* Table */}
+      <div className="flex-1 w-full overflow-auto custom-scrollbar relative bg-gray-50/50 dark:bg-[#121212]">
+        <table className="w-full text-left border-collapse min-w-[600px]">
+          <thead className="sticky top-0 z-10">
+            <tr className="border-b border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-[#1a1a1a] shadow-sm">
+              <th className="p-4 w-10">
+                <button onClick={toggleSelectAll} className="text-gray-400 hover:text-purple-600">
+                  {selectedItems.length > 0 && selectedItems.length === paginatedData.length ? <CheckSquare size={18} /> : <Square size={18} />}
+                </button>
+              </th>
+              {columns.map((col) => (
+                <th 
+                  key={String(col.key)} 
+                  className={`p-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ${col.sortable ? 'cursor-pointer hover:text-purple-600' : ''}`}
+                  onClick={() => col.sortable && handleSort(col.key)}
+                >
+                  <div className="flex items-center gap-1">
+                    {col.label}
+                    {sortConfig?.key === col.key && (
+                      sortConfig.direction === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />
+                    )}
+                  </div>
+                </th>
+              ))}
+              {actions && <th className="p-4 w-10"></th>}
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedData.length > 0 ? (
+                paginatedData.map((item, idx) => (
+                  <motion.tr 
+                    key={item.id}
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: idx * 0.01 }}
+                    className={`border-b border-gray-100 dark:border-white/5 bg-white dark:bg-[#151515] hover:bg-purple-50/30 dark:hover:bg-white/[0.02] transition-colors ${selectedItems.includes(item.id) ? 'bg-purple-50/50 dark:bg-purple-900/10' : ''}`}
+                  >
+                    <td className="p-4">
+                      <button onClick={() => toggleSelect(item.id)} className={`transition-colors ${selectedItems.includes(item.id) ? 'text-purple-600' : 'text-gray-300'}`}>
+                        {selectedItems.includes(item.id) ? <CheckSquare size={18} /> : <Square size={18} />}
+                      </button>
+                    </td>
+                    {columns.map((col) => (
+                      <td key={String(col.key)} className="p-4 text-sm text-gray-700 dark:text-gray-300 align-middle">
+                        {col.render ? col.render(item[col.key], item) : String(item[col.key])}
+                      </td>
+                    ))}
+                    {actions && (
+                      <td className="p-4 text-right align-middle">
+                        <div className="relative group inline-block">
+                          <button className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors">
+                            <MoreHorizontal size={18} />
+                          </button>
+                          {/* Dropdown - simplified hover for demo */}
+                          <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-900 shadow-xl rounded-xl border border-gray-200 dark:border-white/10 p-1 hidden group-hover:block z-20 min-w-[140px] transform origin-top-right">
+                            {actions(item)}
+                          </div>
+                        </div>
+                      </td>
+                    )}
+                  </motion.tr>
+                ))
+            ) : (
+                <tr>
+                    <td colSpan={columns.length + 2} className="py-20 text-center">
+                        <div className="flex flex-col items-center justify-center text-gray-400">
+                            <div className="w-16 h-16 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
+                                <Inbox size={32} className="opacity-40" />
+                            </div>
+                            <p className="font-medium text-lg text-gray-500">No records found</p>
+                            <p className="text-sm">Try adjusting your search or filters.</p>
+                        </div>
+                    </td>
+                </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination (Hide if all items shown or only 1 page) */}
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       {totalPages > 1 && itemsPerPage !== -1 && (
         <div className="p-4 border-t border-gray-200 dark:border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0 bg-white dark:bg-[#151515]">
           <span className="text-xs text-gray-500">
@@ -207,6 +306,7 @@ export function AdminTable<T extends { id: string }>({
             >
               Previous
             </button>
+<<<<<<< HEAD
             <div className="flex gap-1 overflow-x-auto hide-scrollbar max-w-[200px]">
               {Array.from({ length: totalPages }).map((_, i) => {
                  const pageNum = i + 1;
@@ -215,11 +315,21 @@ export function AdminTable<T extends { id: string }>({
                     return i === 1 || i === totalPages - 2 ? <span key={i} className="px-1 py-1 text-gray-400">...</span> : null;
                  }
                  
+=======
+            <div className="flex gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
+                 // Simple pagination logic for display
+                 const pageNum = i + 1;
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                  return (
                   <button
                     key={i}
                     onClick={() => setCurrentPage(pageNum)}
+<<<<<<< HEAD
                     className={`w-8 h-8 rounded-md text-sm font-bold flex items-center justify-center transition-colors shrink-0 ${currentPage === pageNum ? 'bg-purple-600 text-white' : 'hover:bg-gray-50 dark:hover:bg-white/5'}`}
+=======
+                    className={`w-8 h-8 rounded-md text-sm font-bold flex items-center justify-center transition-colors ${currentPage === pageNum ? 'bg-purple-600 text-white' : 'hover:bg-gray-50 dark:hover:bg-white/5'}`}
+>>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                   >
                     {pageNum}
                   </button>
