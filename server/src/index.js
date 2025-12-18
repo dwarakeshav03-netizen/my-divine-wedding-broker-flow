@@ -1,0 +1,110 @@
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import dotenv from "dotenv";
+import { initializeDatabase, closeDatabase } from "./src/config/database.js";
+import authRoutes from "./src/routes/authRoutes.js";
+import profileRoutes from "./src/routes/profileRoutes.js";
+import connectionRoutes from "./src/routes/connectionRoutes.js";
+import {
+  authenticateToken,
+  authorizeRole,
+  errorHandler,
+} from "./src/middleware/auth.js";
+import { apiLimiter } from "./src/middleware/rateLimiter.js";
+import { runMigrations } from "./migrations/run.js";
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// ============ SECURITY MIDDLEWARE ============
+app.use(helmet());
+app.use(
+  cors({
+    origin: (process.env.CORS_ORIGIN || "http://localhost:3000").split(","),
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// ============ BODY PARSING ============
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
+// ============ LOGGING ============
+if (process.env.NODE_ENV !== "test") {
+  app.use(morgan("combined"));
+}
+
+// ============ RATE LIMITING ============
+app.use("/api/", apiLimiter);
+
+// ============ HEALTH CHECK ============
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
+
+// ============ API ROUTES ============
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/profiles", profileRoutes);
+app.use("/api/v1/connections", connectionRoutes);
+
+// ============ 404 HANDLER ============
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found`,
+  });
+});
+
+// ============ ERROR HANDLER ============
+app.use(errorHandler);
+
+// ============ SERVER STARTUP ============
+const startServer = async () => {
+  try {
+    // Initialize database and run migrations
+    console.log("📦 Initializing database...");
+    await initializeDatabase();
+
+    console.log("🔄 Running migrations...");
+    await runMigrations();
+
+    // Start server
+    const server = app.listen(PORT, () => {
+      console.log(`\n✅ Server started successfully on port ${PORT}`);
+      console.log(`📍 API Base URL: http://localhost:${PORT}/api/v1`);
+      console.log(`🔐 Environment: ${process.env.NODE_ENV || "development"}`);
+      console.log(`🛡️  Security: HTTPS headers enabled`);
+    });
+
+    // Graceful shutdown
+    const shutdown = async () => {
+      console.log("\n🛑 Shutting down gracefully...");
+      server.close(async () => {
+        await closeDatabase();
+        console.log("✓ Server closed");
+        process.exit(0);
+      });
+    };
+
+    process.on("SIGTERM", shutdown);
+    process.on("SIGINT", shutdown);
+  } catch (error) {
+    console.error("❌ Failed to start server:", error.message);
+    process.exit(1);
+  }
+};
+
+// Start the server
+startServer();
+
+export default app;

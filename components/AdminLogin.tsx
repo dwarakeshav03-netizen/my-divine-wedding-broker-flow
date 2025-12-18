@@ -180,11 +180,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ isOpen, onClose, onLoginSuccess
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-<<<<<<< HEAD
         className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 text-white font-sans"
-=======
-        className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 text-white font-sans"
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       >
         {/* Animated Background */}
         <canvas ref={canvasRef} className="absolute inset-0 z-0 opacity-20" />

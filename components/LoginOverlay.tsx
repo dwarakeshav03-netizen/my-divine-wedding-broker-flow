@@ -59,11 +59,7 @@ const LoginOverlay: React.FC<LoginOverlayProps> = ({ isOpen, onClose, onSwitchTo
   if (!isOpen) return null;
 
   return (
-<<<<<<< HEAD
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-=======
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       {/* Backdrop */}
       <M.div 
         initial={{ opacity: 0 }} 

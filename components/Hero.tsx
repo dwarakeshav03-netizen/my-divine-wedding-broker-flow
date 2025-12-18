@@ -27,7 +27,6 @@ const Hero: React.FC<HeroProps> = ({ onAction }) => {
   const scaleHero = useTransform(scrollY, [0, 400], [1, 0.95]);
 
   return (
-<<<<<<< HEAD
     <section ref={ref} id="home" className="relative min-h-[100dvh] lg:min-h-[110vh] flex items-center justify-center pt-28 pb-10 lg:pt-20 px-4 overflow-hidden perspective-1000">
       
       {/* Background Parallax Elements */}
@@ -37,17 +36,6 @@ const Hero: React.FC<HeroProps> = ({ onAction }) => {
       </M.div>
 
       <div className="container mx-auto grid lg:grid-cols-2 gap-8 lg:gap-16 items-center relative z-10">
-=======
-    <section ref={ref} id="home" className="relative min-h-[100dvh] lg:min-h-[110vh] flex items-center justify-center pt-24 lg:pt-20 px-4 overflow-hidden perspective-1000">
-      
-      {/* Background Parallax Elements */}
-      <M.div style={{ y: yText }} className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
-         <div className="w-[150vw] h-[150vw] md:w-[800px] md:h-[800px] rounded-full border border-purple-200/20 dark:border-white/5 animate-[spin_60s_linear_infinite] absolute" />
-         <div className="w-[100vw] h-[100vw] md:w-[600px] md:h-[600px] rounded-full border border-gold-200/20 dark:border-gold-500/10 animate-[spin_40s_linear_infinite_reverse] absolute" />
-      </M.div>
-
-      <div className="container mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
         
         {/* Content Side */}
         <M.div 

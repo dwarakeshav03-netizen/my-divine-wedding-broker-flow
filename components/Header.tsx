@@ -25,11 +25,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onLoginClick, on
 
   const MENU_ITEMS = [
     { label: t('nav.home'), id: 'landing' },
-<<<<<<< HEAD
-    { label: 'Free Matching', id: 'matching' }, 
-=======
-    { label: 'Free Matching', id: 'matching' }, // New Link
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
+    { label: 'Free Matching', id: 'matching' },
     { label: t('nav.communities'), id: 'communities' },
     { label: t('nav.membership'), id: 'membership-public' },
     { label: t('nav.stories'), id: 'stories' },
@@ -60,15 +56,9 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onLoginClick, on
 
   return (
     <M.header
-<<<<<<< HEAD
       className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
         isScrolled 
           ? 'py-3 backdrop-blur-md bg-white/80 dark:bg-black/80 border-b border-gray-200/20 dark:border-white/10 shadow-lg supports-[backdrop-filter]:bg-white/60' 
-=======
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'py-3 backdrop-blur-md bg-white/70 dark:bg-black/50 border-b border-gray-200/20 dark:border-white/10 shadow-lg' 
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
           : 'py-6 bg-transparent'
       }`}
       initial={{ y: -100 }}
@@ -80,17 +70,10 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onLoginClick, on
         {/* Logo */}
         <div 
           onClick={() => handleNavClick('landing')}
-<<<<<<< HEAD
           className="flex items-center gap-3 cursor-pointer group z-50 select-none"
         >
           <Logo className="w-9 h-9 md:w-11 md:h-11" />
           <span className="text-lg md:text-2xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-800 via-pink-600 to-purple-800 dark:from-gold-300 dark:via-white dark:to-gold-300 bg-[length:200%_auto] animate-gradient-x truncate max-w-[180px] xs:max-w-none">
-=======
-          className="flex items-center gap-3 cursor-pointer group z-50"
-        >
-          <Logo className="w-10 h-10 md:w-12 md:h-12" />
-          <span className="text-xl md:text-2xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-800 via-pink-600 to-purple-800 dark:from-gold-300 dark:via-white dark:to-gold-300 bg-[length:200%_auto] animate-gradient-x truncate max-w-[200px] xs:max-w-none">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
             {t('app.name')}
           </span>
         </div>
@@ -116,11 +99,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onLoginClick, on
                 onClick={() => setLangMenuOpen(!langMenuOpen)}
                 className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gold-400 flex items-center gap-1"
               >
-<<<<<<< HEAD
                 <Globe size={18} />
-=======
-                <Globe size={20} />
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                 <span className="text-xs font-bold uppercase">{language}</span>
               </button>
               
