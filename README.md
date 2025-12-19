@@ -337,3 +337,19 @@ ISC License - See LICENSE for details
 **Database**: divnematrimony
 
 Last Updated: December 18, 2025
+---
+
+## ⚠️ Known Issue (Local Backend Run)
+
+While running the backend locally, the server fails to start due to a module resolution error related to the database configuration file.
+
+**Error observed:**
+- `ERR_MODULE_NOT_FOUND`
+- Incorrect path resolving `src/src/config/database.js`
+
+**Details:**
+- Root and server dependencies install successfully.
+- Backend startup fails due to an incorrect import/path configuration.
+- This appears to be an internal code issue and may require correction in import statements or folder structure.
+
+This issue was observed during local setup and testing.
