@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onLoginClick, on
 
   const MENU_ITEMS = [
     { label: t('nav.home'), id: 'landing' },
-    { label: 'Free Matching', id: 'matching' },
+    { label: 'Free Matching', id: 'matching' }, 
     { label: t('nav.communities'), id: 'communities' },
     { label: t('nav.membership'), id: 'membership-public' },
     { label: t('nav.stories'), id: 'stories' },
@@ -129,11 +129,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onLoginClick, on
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-cyan-400"
               title={t('nav.admin')}
             >
-<<<<<<< HEAD
               <Shield size={18} />
-=======
-              <Shield size={20} />
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
             </button>
 
             <button
@@ -141,11 +137,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onLoginClick, on
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gold-400"
               aria-label="Toggle Theme"
             >
-<<<<<<< HEAD
               {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-=======
-              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
             </button>
           </div>
 
@@ -157,31 +149,19 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onLoginClick, on
         </nav>
 
         {/* Mobile Menu Button */}
-<<<<<<< HEAD
         <div className="lg:hidden flex items-center gap-3 z-50">
            <button
             onClick={() => setLangMenuOpen(!langMenuOpen)}
             className="p-1.5 rounded-full bg-gray-100 dark:bg-white/10 transition-colors text-gray-700 dark:text-gold-400 font-bold text-[10px] uppercase w-8 h-8 flex items-center justify-center"
-=======
-        <div className="lg:hidden flex items-center gap-4 z-50">
-           <button
-            onClick={() => setLangMenuOpen(!langMenuOpen)}
-            className="p-2 rounded-full bg-gray-100 dark:bg-white/10 transition-colors text-gray-700 dark:text-gold-400 font-bold text-xs uppercase"
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
           >
             {language}
           </button>
           <button 
             className="text-gray-700 dark:text-white p-1"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-<<<<<<< HEAD
             aria-label="Menu"
           >
             {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
-=======
-          >
-            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
           </button>
         </div>
       </div>
@@ -194,42 +174,25 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onLoginClick, on
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-<<<<<<< HEAD
             className="fixed inset-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-xl lg:hidden flex flex-col pt-24"
           >
             <div className="flex flex-col items-center gap-6 p-6 w-full max-w-sm mx-auto overflow-y-auto h-full pb-20">
               <Logo className="w-16 h-16 mb-2" />
-=======
-            className="fixed inset-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-xl lg:hidden flex flex-col justify-center items-center"
-          >
-            <div className="flex flex-col items-center gap-6 p-6 w-full max-w-sm">
-              <Logo className="w-20 h-20 mb-4" />
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 
               {MENU_ITEMS.map((link, idx) => (
                 <M.button
                   key={link.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-<<<<<<< HEAD
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => handleNavClick(link.id)}
                   className="text-xl font-serif font-medium text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-gold-400 w-full text-center py-2"
-=======
-                  transition={{ delay: idx * 0.1 }}
-                  onClick={() => handleNavClick(link.id)}
-                  className="text-xl font-serif font-medium text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-gold-400"
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                 >
                   {link.label}
                 </M.button>
               ))}
               
-<<<<<<< HEAD
               <div className="grid grid-cols-5 gap-2 my-4 w-full">
-=======
-              <div className="grid grid-cols-5 gap-2 my-4">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                  {LANGUAGES.map(lang => (
                     <button 
                       key={lang.code}
@@ -241,7 +204,6 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onLoginClick, on
                  ))}
               </div>
 
-<<<<<<< HEAD
               <div className="flex items-center gap-6 my-2">
                   <button onClick={toggleTheme} className="p-3 bg-gray-100 dark:bg-white/10 rounded-full text-gray-700 dark:text-white">
                       {darkMode ? <Sun size={24} /> : <Moon size={24} />}
@@ -259,40 +221,19 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onLoginClick, on
                     <Shield size={24} /> {t('nav.admin')}
                   </M.button>
               </div>
-=======
-              <M.button 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onAdminClick();
-                }}
-                className="flex items-center gap-2 text-lg font-medium text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-cyan-400"
-              >
-                <Shield size={20} /> {t('nav.admin')}
-              </M.button>
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
               
               <M.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-<<<<<<< HEAD
                 className="w-full mt-auto"
-=======
-                className="w-full"
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
               >
                 <PremiumButton onClick={() => {
                     setMobileMenuOpen(false);
                     onLoginClick();
                   }} 
                   width="full"
-<<<<<<< HEAD
                   className="!py-4 text-lg"
-=======
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                 >
                   {t('nav.login')}
                 </PremiumButton>
@@ -302,21 +243,12 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onLoginClick, on
         )}
       </AnimatePresence>
       
-<<<<<<< HEAD
       {/* Mobile Language Menu Overlay (Desktop Separate) */}
       <AnimatePresence>
          {langMenuOpen && !mobileMenuOpen && (
             <M.div 
                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
                className="fixed top-16 right-4 z-[110] bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden min-w-[150px] lg:hidden"
-=======
-      {/* Mobile Language Menu Overlay */}
-      <AnimatePresence>
-         {langMenuOpen && (
-            <M.div 
-               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-               className="fixed top-20 right-4 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden min-w-[150px] lg:hidden"
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
             >
                {LANGUAGES.map(lang => (
                   <button 

@@ -1,5 +1,4 @@
 
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, MapPin, Users, Plus, Filter, Search, MoreHorizontal, X, Save, Trash2, Image as ImageIcon, Clock } from 'lucide-react';
@@ -18,18 +17,10 @@ interface AdminEvent {
   status: string;
   image: string;
 }
-=======
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Calendar, MapPin, Users, Plus, Filter, Search, MoreHorizontal } from 'lucide-react';
-import { MOCK_EVENTS, AdminEvent } from '../../utils/adminData';
-import PremiumButton from '../ui/PremiumButton';
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 
 const AdminEvents: React.FC = () => {
   const [view, setView] = useState<'list' | 'calendar'>('list');
   const [searchTerm, setSearchTerm] = useState('');
-<<<<<<< HEAD
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [events, setEvents] = useState<AdminEvent[]>([]);
 
@@ -103,19 +94,13 @@ const AdminEvents: React.FC = () => {
   }
 
   const filteredEvents = events.filter(e => e.title.toLowerCase().includes(searchTerm.toLowerCase()));
-=======
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 
   return (
     <div className="space-y-6 h-full flex flex-col">
       <div className="flex justify-between items-center shrink-0">
         <h2 className="text-2xl font-bold flex items-center gap-2"><Calendar className="text-orange-500" /> Event Management</h2>
         <div className="flex gap-2">
-<<<<<<< HEAD
            <PremiumButton onClick={() => setShowCreateModal(true)} icon={<Plus size={16} />} className="!py-2 !px-4 !text-sm">Create Event</PremiumButton>
-=======
-           <PremiumButton icon={<Plus size={16} />} className="!py-2 !px-4 !text-sm">Create Event</PremiumButton>
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
         </div>
       </div>
 
@@ -137,7 +122,6 @@ const AdminEvents: React.FC = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-<<<<<<< HEAD
          {filteredEvents.length === 0 ? (
              <div className="flex flex-col items-center justify-center h-64 text-gray-500">
                  <Calendar size={48} className="opacity-20 mb-4" />
@@ -243,45 +227,6 @@ const AdminEvents: React.FC = () => {
             </div>
         )}
       </AnimatePresence>
-=======
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {MOCK_EVENTS.map(event => (
-               <div key={event.id} className="group bg-white dark:bg-[#121212] rounded-[2rem] overflow-hidden border border-gray-200 dark:border-white/5 shadow-lg hover:shadow-xl transition-all">
-                  <div className="h-48 relative overflow-hidden">
-                     <img src={event.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                     <div className="absolute top-4 left-4 bg-white/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">
-                        {event.type}
-                     </div>
-                     <div className={`absolute top-4 right-4 px-3 py-1 rounded-lg text-xs font-bold text-white ${event.status === 'Upcoming' ? 'bg-green-500' : 'bg-gray-500'}`}>
-                        {event.status}
-                     </div>
-                  </div>
-                  <div className="p-6">
-                     <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{event.title}</h3>
-                        <button className="text-gray-400 hover:text-purple-600"><MoreHorizontal size={20} /></button>
-                     </div>
-                     <div className="space-y-2 mb-6">
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                           <Calendar size={16} /> {event.date}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                           <MapPin size={16} /> {event.location}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                           <Users size={16} /> {event.attendees} Registered
-                        </div>
-                     </div>
-                     <div className="flex gap-2">
-                        <button className="flex-1 py-2 bg-gray-100 dark:bg-white/5 rounded-xl text-xs font-bold hover:bg-gray-200 transition-colors">Edit</button>
-                        <button className="flex-1 py-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-xl text-xs font-bold hover:bg-purple-100 transition-colors">View RSVPs</button>
-                     </div>
-                  </div>
-               </div>
-            ))}
-         </div>
-      </div>
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
     </div>
   );
 };

@@ -329,17 +329,10 @@ const AdminReports: React.FC = () => {
             </div>
          </div>
 
-<<<<<<< HEAD
          {/* Table Area - Container height updated for better visibility and internal scrolling */}
          <div className="flex-1 relative h-[85vh] min-h-[600px] bg-white dark:bg-[#121212] overflow-hidden">
             {filteredReports.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-gray-400">
-=======
-         {/* Table Area - Container height fixed to show ~10 rows (approx 60px each + header) */}
-         <div className="overflow-visible min-h-[800px] bg-white dark:bg-[#121212]"> 
-            {filteredReports.length === 0 ? (
-                <div className="h-64 flex flex-col items-center justify-center text-gray-400">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                     <div className="w-16 h-16 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
                         <CheckCircle size={32} className="opacity-30" />
                     </div>

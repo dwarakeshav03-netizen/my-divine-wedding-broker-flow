@@ -23,11 +23,7 @@ interface Message {
 }
 
 interface Thread {
-<<<<<<< HEAD
   id: string;
-=======
-  id: string; // The partner's user ID is a good unique thread ID for 1-on-1s
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   user: { 
     id: string;
     name: string; 
@@ -52,64 +48,31 @@ interface CommunicationCenterProps {
 const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user', currentUser, initialChatPartner }) => {
   const [activeTab, setActiveTab] = useState<'chats' | 'requests'>('chats');
   const [activeThreadId, setActiveThreadId] = useState<string | null>(initialChatPartner?.id || null);
-<<<<<<< HEAD
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCall, setActiveCall] = useState<{ type: 'audio' | 'video', user: any, status: 'ringing' | 'connected' } | null>(null);
   const [rightPanelOpen, setRightPanelOpen] = useState(false); // Default closed on small screens
   const [messageInput, setMessageInput] = useState('');
-=======
-  const [isMobileView, setIsMobileView] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeCall, setActiveCall] = useState<{ type: 'audio' | 'video', user: any, status: 'ringing' | 'connected' } | null>(null);
-  const [rightPanelOpen, setRightPanelOpen] = useState(true);
-  const [messageInput, setMessageInput] = useState('');
-  
-  // Real Data State
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   const [threads, setThreads] = useState<Thread[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-<<<<<<< HEAD
   // Load Data
-=======
-  // --- DATA LOADING & PERSISTENCE ---
-  
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   useEffect(() => {
     if (!currentUser) return;
 
     const loadChats = () => {
-<<<<<<< HEAD
       const allMessages: Message[] = JSON.parse(localStorage.getItem('mdm_messages') || '[]');
       const allUsers = JSON.parse(localStorage.getItem('mdm_users') || '[]');
       
-=======
-      // 1. Fetch Raw Messages from LS
-      const allMessages: Message[] = JSON.parse(localStorage.getItem('mdm_messages') || '[]');
-      
-      // 2. Fetch Users to resolve details
-      const allUsers = JSON.parse(localStorage.getItem('mdm_users') || '[]');
-      
-      // 3. Find all partners the current user has chatted with
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       const partnerIds = new Set<string>();
       allMessages.forEach(m => {
         if (m.senderId === currentUser.id) partnerIds.add(m.receiverId);
         if (m.receiverId === currentUser.id) partnerIds.add(m.senderId);
       });
 
-<<<<<<< HEAD
       const loadedThreads: Thread[] = Array.from(partnerIds).map(partnerId => {
         const partner = allUsers.find((u: any) => u.id === partnerId) || { id: partnerId, name: 'Unknown', avatar: '' };
-=======
-      // 4. Construct Threads
-      const loadedThreads: Thread[] = Array.from(partnerIds).map(partnerId => {
-        const partner = allUsers.find((u: any) => u.id === partnerId) || { id: partnerId, name: 'Unknown', avatar: '' };
-        
-        // Filter messages for this thread
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
         const threadMessages = allMessages.filter(m => 
           (m.senderId === currentUser.id && m.receiverId === partnerId) || 
           (m.senderId === partnerId && m.receiverId === currentUser.id)
@@ -125,11 +88,7 @@ const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user'
             name: partner.name,
             role: 'Match',
             img: partner.avatar || `https://ui-avatars.com/api/?name=${partner.name || 'Unknown'}&background=random`,
-<<<<<<< HEAD
             online: Math.random() > 0.5
-=======
-            online: Math.random() > 0.5 // Mock presence
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
           },
           lastMessage: lastMsg ? lastMsg.text : 'Start conversation',
           time: lastMsg ? new Date(lastMsg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
@@ -140,10 +99,6 @@ const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user'
         };
       });
 
-<<<<<<< HEAD
-=======
-      // 5. Handle Initial Chat Request (if not already in thread list)
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       if (initialChatPartner && !loadedThreads.find(t => t.id === initialChatPartner.id)) {
         loadedThreads.unshift({
            id: initialChatPartner.id,
@@ -167,48 +122,26 @@ const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user'
     };
 
     loadChats();
-<<<<<<< HEAD
-=======
-    
-    // Poll for new messages
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
     const interval = setInterval(loadChats, 3000);
     return () => clearInterval(interval);
 
   }, [currentUser, initialChatPartner]);
 
-<<<<<<< HEAD
-=======
-  // Set active thread if initialChatPartner is provided
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   useEffect(() => {
     if (initialChatPartner) {
         setActiveThreadId(initialChatPartner.id);
     }
   }, [initialChatPartner]);
 
-<<<<<<< HEAD
-=======
-  // Auto-scroll on new message
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   useEffect(() => {
      if(activeThreadId && messagesEndRef.current) {
         messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
      }
   }, [threads, activeThreadId]);
 
-<<<<<<< HEAD
   const activeThread = threads.find(t => t.id === activeThreadId);
   const filteredThreads = threads.filter(t => t.user.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
-=======
-  // --- ACTIONS ---
-
-  const activeThread = threads.find(t => t.id === activeThreadId);
-  const filteredThreads = threads.filter(t => t.user.name.toLowerCase().includes(searchTerm.toLowerCase()));
-
-  // Check if current user has blocked the active thread user
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   const isBlocked = useMemo(() => {
     if (!currentUser || !activeThreadId) return false;
     const rels = JSON.parse(localStorage.getItem('mdm_relationships') || '[]');
@@ -232,10 +165,6 @@ const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user'
           read: false
       };
 
-<<<<<<< HEAD
-=======
-      // Optimistic update
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       const updatedThreads = threads.map(t => {
           if(t.id === activeThreadId) {
              return { ...t, messages: [...t.messages, newMessage], lastMessage: newMessage.text, time: 'Just now' };
@@ -245,10 +174,6 @@ const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user'
       setThreads(updatedThreads);
       setMessageInput('');
 
-<<<<<<< HEAD
-=======
-      // Persist
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       const allMessages = JSON.parse(localStorage.getItem('mdm_messages') || '[]');
       localStorage.setItem('mdm_messages', JSON.stringify([...allMessages, newMessage]));
   };
@@ -259,10 +184,6 @@ const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user'
         return;
     }
     setActiveCall({ type, user, status: 'ringing' });
-<<<<<<< HEAD
-=======
-    // Log call start
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
     const callMsg: Message = {
         id: Date.now().toString(),
         senderId: currentUser.id,
@@ -292,18 +213,9 @@ const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user'
           if (apiKey) {
               const ai = new GoogleGenAI({ apiKey });
               const model = ai.getGenerativeModel({ model: "gemini-2.5-flash" });
-<<<<<<< HEAD
               const lastPartnerMsg = [...activeThread.messages].reverse().find(m => m.senderId !== currentUser.id);
               if(lastPartnerMsg) {
                  const prompt = `Act as a user on a matrimony site. Draft a polite reply to: "${lastPartnerMsg.text}". Keep it under 2 sentences.`;
-=======
-              
-              // Get last message from partner
-              const lastPartnerMsg = [...activeThread.messages].reverse().find(m => m.senderId !== currentUser.id);
-              
-              if(lastPartnerMsg) {
-                 const prompt = `Act as a user on a matrimony site. Draft a polite, engaging, short reply to this message: "${lastPartnerMsg.text}". Keep it natural and under 2 sentences.`;
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                  const result = await model.generateContent(prompt);
                  setMessageInput(result.response.text());
               }
@@ -323,20 +235,12 @@ const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user'
   ];
 
   return (
-<<<<<<< HEAD
     // Use dvh for mobile viewport height to handle address bars correctly
     <div className="flex flex-col md:flex-row h-[calc(100dvh-120px)] md:h-[calc(100vh-140px)] min-h-[500px] bg-white/60 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] shadow-2xl overflow-hidden relative">
       
       {/* SIDEBAR LIST - Hidden on mobile if thread active */}
       <div className={`
         w-full md:w-80 flex-col border-r border-gray-200 dark:border-white/10 bg-white/50 dark:bg-black/20
-=======
-    <div className="flex h-[calc(100vh-140px)] min-h-[500px] md:min-h-[600px] bg-white/60 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] shadow-2xl overflow-hidden relative">
-      
-      {/* SIDEBAR LIST */}
-      <div className={`
-        w-full md:w-80 flex flex-col border-r border-gray-200 dark:border-white/10 bg-white/50 dark:bg-black/20
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
         ${activeThreadId ? 'hidden md:flex' : 'flex'}
       `}>
         {/* Header Tabs */}
@@ -406,15 +310,9 @@ const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user'
         </div>
       </div>
 
-<<<<<<< HEAD
       {/* ACTIVE VIEW (Chat Interface) */}
       <div className={`
          flex-1 flex-col bg-white/30 dark:bg-transparent h-full
-=======
-      {/* ACTIVE VIEW */}
-      <div className={`
-         flex-1 flex flex-col bg-white/30 dark:bg-transparent
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
          ${!activeThreadId ? 'hidden md:flex' : 'flex'}
       `}>
          {activeThread ? (
@@ -452,11 +350,7 @@ const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user'
          )}
       </div>
 
-<<<<<<< HEAD
       {/* RIGHT: Context Panel (Desktop Only for now) */}
-=======
-      {/* RIGHT: Context Panel (Only if chat active) */}
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
       <AnimatePresence>
          {activeThread && rightPanelOpen && (
             <motion.div 
@@ -468,11 +362,7 @@ const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user'
                      <img src={activeThread.user.img} className="w-full h-full object-cover" />
                   </div>
                   <h3 className="font-bold text-lg">{activeThread.user.name}</h3>
-<<<<<<< HEAD
                   <p className="text-xs text-gray-500">{activeThread.user.id} • {activeThread.user.role}</p>
-=======
-                  <p className="text-xs text-gray-500">{activeThread.user.id}</p>
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                   <div className="flex justify-center gap-2 mt-4">
                      <button className="p-2 bg-white dark:bg-white/5 rounded-lg text-purple-600 hover:scale-110 transition-transform"><User size={18} /></button>
                      <button className="p-2 bg-white dark:bg-white/5 rounded-lg text-purple-600 hover:scale-110 transition-transform"><FileText size={18} /></button>
@@ -513,10 +403,6 @@ const CommunicationCenter: React.FC<CommunicationCenterProps> = ({ mode = 'user'
 // --- SUB-COMPONENTS ---
 
 const RequestList: React.FC = () => {
-<<<<<<< HEAD
-=======
-   // Mock requests - In real app, reuse incoming requests logic from Dashboard
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
    const requests = [
       { id: 1, name: "Arun K", profession: "Engineer", location: "Bangalore", img: "https://ui-avatars.com/api/?name=Arun+K&background=random" },
       { id: 2, name: "Vijay S", profession: "Doctor", location: "Chennai", img: "https://ui-avatars.com/api/?name=Vijay+S&background=random" }
@@ -570,11 +456,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
    }, [activeThread.messages]);
 
    return (
-<<<<<<< HEAD
       <div className="flex flex-col h-full w-full">
-=======
-      <div className="flex flex-col h-full">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
          {/* Chat Header */}
          <div className="h-16 border-b border-gray-200 dark:border-white/10 flex justify-between items-center px-4 md:px-6 shrink-0 bg-white/50 dark:bg-black/20 backdrop-blur-md">
             <div className="flex items-center gap-3">
@@ -583,18 +465,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   <img src={activeThread.user.img} alt={activeThread.user.name} className="w-10 h-10 rounded-full object-cover" />
                   {activeThread.user.online && <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-black rounded-full" />}
                </div>
-<<<<<<< HEAD
                <div className="min-w-0">
                   <h3 className="font-bold text-gray-900 dark:text-white leading-tight truncate">{activeThread.user.name}</h3>
-=======
-               <div>
-                  <h3 className="font-bold text-gray-900 dark:text-white leading-tight">{activeThread.user.name}</h3>
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                   <p className="text-xs text-green-500 font-medium">{activeThread.user.online ? 'Online' : 'Offline'}</p>
                </div>
             </div>
             <div className="flex items-center gap-2">
-<<<<<<< HEAD
                 <button onClick={() => startCall('audio', activeThread.user)} disabled={isBlocked} className="p-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors disabled:opacity-50">
                     <Phone size={18} />
                 </button>
@@ -602,56 +478,24 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     <Video size={18} />
                 </button>
                <button onClick={() => setRightPanelOpen(!rightPanelOpen)} className="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full hidden lg:block transition-colors">
-=======
-                <button onClick={() => startCall('audio', activeThread.user)} disabled={isBlocked} className="p-2.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors disabled:opacity-50">
-                    <Phone size={18} />
-                </button>
-                <button onClick={() => startCall('video', activeThread.user)} disabled={isBlocked} className="p-2.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors disabled:opacity-50">
-                    <Video size={18} />
-                </button>
-               <button onClick={() => setRightPanelOpen(!rightPanelOpen)} className="p-2.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full hidden lg:block transition-colors">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                   <MoreVertical size={18} />
                </button>
             </div>
          </div>
 
-<<<<<<< HEAD
          {/* Messages Area */}
-=======
-         {/* Audio Intro Section (Top) */}
-         <div className="px-4 py-2 bg-gray-50/50 dark:bg-white/5 border-b border-gray-200 dark:border-white/10">
-            <div className="flex items-center gap-2">
-               <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Audio Intro</span>
-               <div className="h-px bg-gray-200 dark:bg-white/10 flex-1" />
-            </div>
-            <div className="mt-2 scale-90 origin-left">
-               <AudioProfile />
-            </div>
-         </div>
-
-         {/* Messages */}
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
          <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-gray-50/30 dark:bg-black/10">
             {/* System Notice */}
             <div className="flex justify-center">
                <span className="text-[10px] bg-yellow-50 dark:bg-yellow-900/10 text-yellow-700 dark:text-yellow-300 px-3 py-1 rounded-full border border-yellow-100 dark:border-yellow-900/20 flex items-center gap-1">
-<<<<<<< HEAD
                   <Shield size={10} /> Secure & Private
-=======
-                  <Shield size={10} /> This conversation is secure and private.
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                </span>
             </div>
 
             {isParent && (
                <div className="flex justify-center my-2">
                   <span className="text-[10px] bg-blue-50 dark:bg-blue-900/10 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-900/20">
-<<<<<<< HEAD
                      Parent Mode Active
-=======
-                     Parent Mode: Monitoring Active
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                   </span>
                </div>
             )}
@@ -670,11 +514,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                         ? 'bg-purple-600 text-white rounded-tr-none' 
                         : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none border border-gray-100 dark:border-white/5'
                      }`}>
-<<<<<<< HEAD
                         <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-=======
-                        <p className="text-sm leading-relaxed">{msg.text}</p>
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                         <div className={`flex items-center gap-1 justify-end mt-1 text-[10px] ${msg.senderId === currentUser.id ? 'text-purple-200' : 'text-gray-400'}`}>
                            <span>{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                            {msg.senderId === currentUser.id && (
@@ -692,7 +532,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
          {isBlocked ? (
             <div className="p-4 bg-gray-50 dark:bg-[#0a0a0a] border-t border-gray-200 dark:border-white/10 flex flex-col items-center justify-center text-center">
                 <div className="flex items-center gap-2 text-red-500 font-bold mb-1">
-<<<<<<< HEAD
                     <Ban size={18} /> Blocked
                 </div>
                 <p className="text-xs text-gray-500">You cannot contact this user.</p>
@@ -705,60 +544,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     onClick={generateAiReply}
                     disabled={aiLoading}
                     className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 text-purple-700 dark:text-purple-300 rounded-lg text-xs font-bold whitespace-nowrap hover:shadow-sm transition-all shrink-0"
-=======
-                    <Ban size={18} /> You have blocked this user
-                </div>
-                <p className="text-xs text-gray-500">You cannot send messages or call this user.</p>
-            </div>
-         ) : (
-            <div className="p-4 pr-4 md:pr-24 bg-white dark:bg-black/20 border-t border-gray-200 dark:border-white/10">
-                {/* AI & Quick Actions */}
-                <div className="flex gap-2 mb-3 overflow-x-auto hide-scrollbar">
-                    <button 
-                    onClick={generateAiReply}
-                    disabled={aiLoading}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 text-purple-700 dark:text-purple-300 rounded-lg text-xs font-bold whitespace-nowrap hover:shadow-sm transition-all"
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                     >
                     <Sparkles size={12} className={aiLoading ? 'animate-spin' : ''} />
                     {aiLoading ? 'Drafting...' : 'Magic Reply'}
                     </button>
-<<<<<<< HEAD
                     <button className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 rounded-lg text-xs font-bold whitespace-nowrap hover:bg-gray-200 shrink-0">
                         <Calendar size={12} /> Schedule
-=======
-                    <button onClick={() => {}} className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 rounded-lg text-xs font-bold whitespace-nowrap hover:bg-gray-200">
-                        <Calendar size={12} /> Schedule Call
-                    </button>
-                    <button className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 rounded-lg text-xs font-bold whitespace-nowrap hover:bg-gray-200">
-                        <Users size={12} /> Host Parent Call
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                     </button>
                 </div>
 
                 <div className="flex items-end gap-2 bg-gray-100 dark:bg-white/5 p-2 rounded-2xl border border-gray-200 dark:border-white/5 focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500/20 transition-all">
-<<<<<<< HEAD
                     <button className="p-2 text-gray-400 hover:text-purple-600 shrink-0"><Plus size={20} /></button>
-=======
-                    <button className="p-2 text-gray-400 hover:text-purple-600"><Plus size={20} /></button>
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                     <textarea 
                         value={messageInput}
                         onChange={(e) => setMessageInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())}
-<<<<<<< HEAD
                         placeholder="Type a message..."
                         className="flex-1 bg-transparent border-none outline-none text-sm resize-none max-h-32 py-2 text-gray-900 dark:text-white placeholder-gray-400 min-h-[40px]"
                         rows={1}
                     />
                     <div className="flex gap-1 shrink-0">
-=======
-                        placeholder="Type your message..."
-                        className="flex-1 bg-transparent border-none outline-none text-sm resize-none max-h-32 py-2 text-gray-900 dark:text-white placeholder-gray-400"
-                        rows={1}
-                    />
-                    <div className="flex gap-1">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                         <button onClick={handleSendMessage} className="p-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 shadow-lg shadow-purple-500/30 transition-all active:scale-95">
                             <Send size={18} />
                         </button>
@@ -767,11 +572,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </div>
          )}
       </div>
-<<<<<<< HEAD
   );
-=======
-   );
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 };
 
 const CallOverlay: React.FC<{ type: 'audio' | 'video', user: any, status: string, onEnd: () => void, isParent?: boolean }> = ({ type, user, status, onEnd, isParent }) => {
@@ -781,11 +582,7 @@ const CallOverlay: React.FC<{ type: 'audio' | 'video', user: any, status: string
          className="absolute inset-0 z-50 bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center text-white"
       >
          <div className="relative">
-<<<<<<< HEAD
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-white/20 mb-6 relative z-10">
-=======
-            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white/20 mb-6 relative z-10">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                <img src={user.img} alt={user.name} className="w-full h-full object-cover" />
             </div>
             {status === 'ringing' && (
@@ -802,11 +599,7 @@ const CallOverlay: React.FC<{ type: 'audio' | 'video', user: any, status: string
             </div>
          )}
 
-<<<<<<< HEAD
          <h2 className="text-2xl md:text-3xl font-display font-bold mb-2">{user.name}</h2>
-=======
-         <h2 className="text-3xl font-display font-bold mb-2">{user.name}</h2>
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
          <p className="text-purple-300 animate-pulse mb-12 capitalize">{status}...</p>
 
          <div className="flex items-center gap-6">

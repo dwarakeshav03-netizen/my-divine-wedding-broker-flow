@@ -62,11 +62,7 @@ const Hero: React.FC<HeroProps> = ({ onAction }) => {
           </M.div>
 
           {/* Fluid Typography using Clamp */}
-<<<<<<< HEAD
           <h1 className="text-[clamp(2.5rem,8vw,5.5rem)] lg:text-[clamp(4rem,6vw,7rem)] font-display font-bold leading-[1.1] md:leading-[0.9] text-gray-900 dark:text-white tracking-tight pt-2">
-=======
-          <h1 className="text-[clamp(2.5rem,8vw,6rem)] lg:text-[clamp(4rem,6vw,8rem)] font-display font-bold leading-[0.9] text-gray-900 dark:text-white tracking-tight pt-2">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
             <M.span 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -87,29 +83,17 @@ const Hero: React.FC<HeroProps> = ({ onAction }) => {
                initial={{ opacity: 0, y: 20 }}
                animate={{ opacity: 1, y: 0 }}
                transition={{ delay: 0.4, duration: 0.8 }}
-<<<<<<< HEAD
                className="block text-[clamp(1.5rem,5vw,3rem)] lg:text-[clamp(2.5rem,3vw,4rem)] font-serif italic font-normal text-gray-500 dark:text-gray-400 mt-2 lg:mt-4"
-=======
-               className="block text-[clamp(1.5rem,4vw,3rem)] lg:text-[clamp(2.5rem,3vw,4rem)] font-serif italic font-normal text-gray-500 dark:text-gray-400 mt-2 lg:mt-4"
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
             >
               {t('hero.subtitle')}
             </M.span>
           </h1>
 
-<<<<<<< HEAD
           <p className="text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 max-w-lg mx-auto lg:mx-0 leading-relaxed font-light px-2 lg:px-0">
             {t('hero.description')}
           </p>
 
           <div className="flex flex-col gap-2 justify-center lg:justify-start pt-2 px-6 lg:px-0 pb-8 lg:pb-0">
-=======
-          <p className="text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 max-w-lg mx-auto lg:mx-0 leading-relaxed font-light px-4 lg:px-0">
-            {t('hero.description')}
-          </p>
-
-          <div className="flex flex-col gap-2 justify-center lg:justify-start pt-4 px-8 lg:px-0 pb-12 lg:pb-0">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
             <PremiumButton onClick={onAction} icon={<ArrowRight size={20} />} width="full">
               {t('hero.ctaText')}
             </PremiumButton>
@@ -122,11 +106,7 @@ const Hero: React.FC<HeroProps> = ({ onAction }) => {
           initial={{ opacity: 0, x: 50, rotate: 5 }}
           animate={{ opacity: 1, x: 0, rotate: 0 }}
           transition={{ delay: 0.2, duration: 1, type: "spring" }}
-<<<<<<< HEAD
           className="relative perspective-1000 w-full max-w-md mx-auto lg:max-w-full mt-4 lg:mt-0"
-=======
-          className="relative perspective-1000 w-full max-w-md mx-auto lg:max-w-full mt-8 lg:mt-0"
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
         >
           {/* Decorative Floaters */}
           <M.div 
@@ -145,11 +125,7 @@ const Hero: React.FC<HeroProps> = ({ onAction }) => {
               <Search className="w-6 h-6 lg:w-8 lg:h-8 text-white" />
             </div>
 
-<<<<<<< HEAD
             <h3 className="text-xl md:text-2xl lg:text-3xl font-display font-bold mb-6 lg:mb-8 text-center text-gray-800 dark:text-white mt-4">
-=======
-            <h3 className="text-2xl lg:text-3xl font-display font-bold mb-6 lg:mb-8 text-center text-gray-800 dark:text-white mt-4">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
               {t('hero.search.title')}
             </h3>
             

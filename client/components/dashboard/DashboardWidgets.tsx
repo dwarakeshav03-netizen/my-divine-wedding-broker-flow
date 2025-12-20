@@ -15,11 +15,7 @@ import useTranslation from '../../hooks/useTranslation';
 
 const M = motion as any;
 
-<<<<<<< HEAD
 // ... MagneticCard, SectionHeader, SafetyScoreWidget, RequestCard, EventCard components (unchanged) ...
-=======
-// ... MagneticCard, SectionHeader, SafetyScoreWidget, RequestCard, EventCard components (no changes needed) ...
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- MAGNETIC CARD WRAPPER ---
 export const MagneticCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = "" }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -33,20 +29,12 @@ export const MagneticCard: React.FC<{ children: React.ReactNode; className?: str
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-<<<<<<< HEAD
     if (!rectRef.current || window.innerWidth < 1024) return; // Disable on touch devices/small screens
-=======
-    if (!rectRef.current || window.innerWidth < 768) return; 
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
     const { clientX, clientY } = e;
     const { height, width, left, top } = rectRef.current;
     const x = clientX - (left + width / 2);
     const y = clientY - (top + height / 2);
-<<<<<<< HEAD
     setPosition({ x: x * 0.05, y: y * 0.05 }); 
-=======
-    setPosition({ x: x * 0.1, y: y * 0.1 }); 
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   };
 
   const handleMouseLeave = () => {
@@ -70,10 +58,7 @@ export const MagneticCard: React.FC<{ children: React.ReactNode; className?: str
   );
 };
 
-<<<<<<< HEAD
 // ... SectionHeader, SafetyScoreWidget, RequestCard, EventCard (keep existing) ...
-=======
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- SECTION HEADER ---
 export const SectionHeader: React.FC<{ title: string; subtitle?: string; action?: string; onAction?: () => void }> = ({ title, subtitle, action, onAction }) => (
   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-2">
@@ -250,10 +235,6 @@ export const DashboardSidebar: React.FC<SidebarProps> = ({
 }) => {
   const { t } = useTranslation();
 
-<<<<<<< HEAD
-=======
-  // Translated Items with Blocked added
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   const items = menuItems || [
     { id: 'overview', icon: <Home size={20} />, label: t('dash.overview') },
     { id: 'matches', icon: <Users size={20} />, label: t('dash.matches'), badge: '12' },
@@ -266,11 +247,7 @@ export const DashboardSidebar: React.FC<SidebarProps> = ({
     { id: 'events', icon: <Calendar size={20} />, label: t('dash.events') },
     { id: 'visitors', icon: <Eye size={20} />, label: t('dash.visitors') },
     { id: 'membership', icon: <Crown size={20} />, label: t('nav.membership') },
-<<<<<<< HEAD
     { id: 'blocked', icon: <Ban size={20} />, label: 'Blocked Profiles' },
-=======
-    { id: 'blocked', icon: <Ban size={20} />, label: 'Blocked Profiles' }, // Added Blocked Item
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
     { id: 'support', icon: <Headphones size={20} />, label: t('footer.help') },
     { id: 'settings', icon: <Settings size={20} />, label: t('dash.settings') },
   ];
@@ -285,26 +262,16 @@ export const DashboardSidebar: React.FC<SidebarProps> = ({
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }}
             onClick={closeMobile}
-<<<<<<< HEAD
             className="fixed inset-0 bg-black/60 z-[90] lg:hidden backdrop-blur-sm"
-=======
-            className="fixed inset-0 bg-black/60 z-[60] lg:hidden backdrop-blur-sm"
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
           />
           <M.div
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-<<<<<<< HEAD
             className="fixed inset-y-0 left-0 z-[100] w-[80vw] sm:w-[320px] bg-white dark:bg-[#0a0a0a] border-r border-gray-200 dark:border-white/10 lg:hidden flex flex-col shadow-2xl"
           >
              <div className="p-6 flex items-center justify-between border-b border-gray-100 dark:border-white/5 pt-safe-top">
-=======
-            className="fixed inset-y-0 left-0 z-[70] w-[80vw] sm:w-[320px] bg-white dark:bg-[#0a0a0a] border-r border-gray-200 dark:border-white/10 lg:hidden flex flex-col shadow-2xl"
-          >
-             <div className="p-6 flex items-center justify-between border-b border-gray-100 dark:border-white/5">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                 <div className="flex items-center gap-3">
                    <Logo className="w-8 h-8" />
                    <span className="font-display font-bold text-xl">Divine</span>
@@ -336,11 +303,7 @@ export const DashboardSidebar: React.FC<SidebarProps> = ({
                    </button>
                 ))}
              </div>
-<<<<<<< HEAD
              <div className="p-4 border-t border-gray-100 dark:border-white/5 pb-safe-bottom">
-=======
-             <div className="p-4 border-t border-gray-100 dark:border-white/5">
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
                 <button onClick={onLogout} className="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors font-medium">
                    <LogOut size={20} /> {t('dash.logout')}
                 </button>
@@ -423,11 +386,7 @@ export const DashboardSidebar: React.FC<SidebarProps> = ({
     </>
   );
 };
-<<<<<<< HEAD
 // ... MatchCard, StatCard (keep existing) ...
-=======
-// ... rest of the file (DashboardHeader, MatchCard, StatCard etc.) remains the same ...
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- HEADER COMPONENT ---
 export const DashboardHeader: React.FC<{ 
   toggleTheme: () => void, 
@@ -499,11 +458,7 @@ export const DashboardHeader: React.FC<{
     </M.header>
   );
 };
-<<<<<<< HEAD
 
-=======
-// ... rest of the components in this file (MatchCard, StatCard)
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- MATCH CARD COMPONENT ---
 interface MatchCardProps {
   match: {

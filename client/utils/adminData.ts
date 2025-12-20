@@ -6,11 +6,7 @@ export interface AdminUser {
   name: string;
   email: string;
   mobile: string;
-<<<<<<< HEAD
   role: string;
-=======
-  role: 'user';
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   status: 'active' | 'suspended' | 'pending' | 'blocked' | 'rejected';
   plan: 'free' | 'gold' | 'diamond' | 'platinum';
   joinedDate: string;
@@ -51,15 +47,9 @@ export interface SystemAdmin {
 // --- ROLE BASED ACCESS CONTROL CONFIG ---
 export const ROLE_PERMISSIONS: Record<string, string[]> = {
   'Super Admin': ['*'], 
-<<<<<<< HEAD
   'Admin': ['user-database', 'interests', 'reports', 'support', 'app-management', 'settings', 'chatbot', 'events'], 
   'Moderator': ['app-management', 'reports', 'chatbot'], 
   'Support': ['support', 'user-database', 'interests', 'approvals-log', 'chatbot'], 
-=======
-  'Admin': ['user-database', 'interests', 'reports', 'support', 'app-management', 'settings', 'chatbot'], // Removed: new-accounts, verification, payments
-  'Moderator': ['app-management', 'reports', 'chatbot'], 
-  'Support': ['support', 'user-database', 'interests', 'approvals-log', 'chatbot'], // Removed: new-accounts, verification
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
   'Finance': ['payments'],
   'Astrologer': ['astrology-dashboard', 'horoscope-analysis'] 
 };
@@ -140,7 +130,6 @@ export interface GlobalAuditLog {
     ip: string;
 }
 
-<<<<<<< HEAD
 export const MOCK_GLOBAL_AUDIT_LOGS: GlobalAuditLog[] = [
     { id: 'LOG-001', actorId: 'ADM-001', actorName: 'Manoj Admin', actorRole: 'Admin', action: 'Approved User', target: 'USR-1002', module: 'User Mgmt', timestamp: '2024-03-20 10:30:00', severity: 'low', ip: '192.168.1.1' },
     { id: 'LOG-002', actorId: 'SA-001', actorName: 'Super Admin', actorRole: 'Super Admin', action: 'System Config Change', target: 'Payment Gateway', module: 'Settings', timestamp: '2024-03-20 09:15:00', severity: 'critical', ip: '10.0.0.1' },
@@ -148,8 +137,6 @@ export const MOCK_GLOBAL_AUDIT_LOGS: GlobalAuditLog[] = [
     { id: 'LOG-004', actorId: 'ADM-003', actorName: 'Mike Moderator', actorRole: 'Moderator', action: 'Blocked User', target: 'USR-FAKE', module: 'Reports', timestamp: '2024-03-19 11:00:00', severity: 'medium', ip: '192.168.1.12' },
 ];
 
-=======
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 export interface SecurityEvent {
     id: string;
     type: 'Login Success' | 'Login Failed' | 'Password Change' | 'Suspicious Activity';
@@ -160,15 +147,12 @@ export interface SecurityEvent {
     status: 'Safe' | 'Warning' | 'Critical';
 }
 
-<<<<<<< HEAD
 export const MOCK_SECURITY_EVENTS: SecurityEvent[] = [
     { id: 'SEC-001', type: 'Login Failed', user: 'admin@divine.com', ip: '45.23.12.1', location: 'Moscow, RU', timestamp: '10 mins ago', status: 'Warning' },
     { id: 'SEC-002', type: 'Suspicious Activity', user: 'USR-9921', ip: '103.21.44.2', location: 'Chennai, IN', timestamp: '1 hour ago', status: 'Critical' },
     { id: 'SEC-003', type: 'Login Success', user: 'support@divine.com', ip: '192.168.1.5', location: 'Bangalore, IN', timestamp: '2 hours ago', status: 'Safe' },
 ];
 
-=======
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 export interface Transaction {
   id: string;
   userId: string;
@@ -183,7 +167,6 @@ export interface Transaction {
   invoiceUrl?: string;
 }
 
-<<<<<<< HEAD
 export const MOCK_TRANSACTIONS: Transaction[] = [
     { id: 'TXN-8821', userId: 'USR-1002', userName: 'Arjun Reddy', userAvatar: 'https://ui-avatars.com/api/?name=Arjun+Reddy', amount: '₹10,999', plan: 'Platinum', status: 'success', date: '2024-03-15', expiryDate: '2025-03-15', method: 'UPI' },
     { id: 'TXN-8822', userId: 'USR-1005', userName: 'Priya Sharma', userAvatar: 'https://ui-avatars.com/api/?name=Priya+Sharma', amount: '₹6,999', plan: 'Diamond', status: 'pending', date: '2024-03-14', expiryDate: '2024-09-14', method: 'Card' },
@@ -200,8 +183,6 @@ export const REVENUE_DATA = [
     { month: 'Jun', revenue: 180 },
 ];
 
-=======
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 export interface VerificationRequest {
   id: string;
   userId: string;
@@ -251,15 +232,12 @@ export interface ReportTicket {
   };
 }
 
-<<<<<<< HEAD
 export const MOCK_REPORTS: ReportTicket[] = [
     { id: 'RPT-101', reporter: 'Priya S', reportedUser: 'Rahul V', reportedUserId: 'USR-1002', reportedUserAvatar: 'https://ui-avatars.com/api/?name=Rahul+V', reason: 'Inappropriate messages sent via chat.', category: 'Harassment', severity: 'high', status: 'open', timestamp: '2 hours ago', aiFlag: true, aiRiskScore: 85 },
     { id: 'RPT-102', reporter: 'Suresh K', reportedUser: 'Anjali M', reportedUserId: 'USR-9932', reportedUserAvatar: 'https://ui-avatars.com/api/?name=Anjali+M', reason: 'Fake profile picture, reverse image search shows stock photo.', category: 'Fake Profile', severity: 'medium', status: 'investigating', timestamp: '1 day ago', aiFlag: false, aiRiskScore: 40 },
     { id: 'RPT-103', reporter: 'Admin System', reportedUser: 'Bot User 1', reportedUserId: 'USR-BOT1', reportedUserAvatar: 'https://ui-avatars.com/api/?name=Bot', reason: 'Multiple rapid requests detected.', category: 'Spam', severity: 'critical', status: 'open', timestamp: '30 mins ago', aiFlag: true, aiRiskScore: 95 },
 ];
 
-=======
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 export interface CommunicationLog {
   id: string;
   type: 'chat' | 'audio_call' | 'video_call' | 'interest';
@@ -278,7 +256,6 @@ export interface CommunicationLog {
   };
 }
 
-<<<<<<< HEAD
 export const MOCK_COMMUNICATION_LOGS: CommunicationLog[] = [
     { id: 'LOG-C1', type: 'chat', senderId: 'USR-1002', senderName: 'Arjun', receiverId: 'USR-8821', receiverName: 'Priya', timestamp: '10:30 AM', status: 'completed', riskScore: 12, metadata: { contentSnippet: 'Hi, how are you? I saw your profile...' } },
     { id: 'LOG-C2', type: 'audio_call', senderId: 'USR-1005', senderName: 'Vikram', receiverId: 'USR-9921', receiverName: 'Ananya', timestamp: 'Yesterday', status: 'completed', riskScore: 5, metadata: { duration: '12:45' } },
@@ -299,8 +276,6 @@ export const SAFETY_ANALYTICS = {
   dailyScans: 1500
 };
 
-=======
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 export interface SystemLog {
   id: string;
   action: string;
@@ -335,14 +310,11 @@ export interface HoroscopeSubmission {
   compatibilityCount: number; // Potential matches in DB
 }
 
-<<<<<<< HEAD
 export const MOCK_HOROSCOPE_SUBMISSIONS: HoroscopeSubmission[] = [
     { id: 'HOR-001', userId: 'USR-1002', userName: 'Arjun Reddy', userAvatar: 'https://ui-avatars.com/api/?name=Arjun', raasi: 'Mesha', nakshatra: 'Aswini', lagnam: 'Simha', dosham: 'None', fileUrl: 'horoscope.pdf', submittedAt: '2 hours ago', status: 'pending', aiMatchScore: 95, compatibilityCount: 12 },
     { id: 'HOR-002', userId: 'USR-9921', userName: 'Ananya M', userAvatar: 'https://ui-avatars.com/api/?name=Ananya', raasi: 'Kumbha', nakshatra: 'Shatabhisha', lagnam: 'Dhanusu', dosham: 'Chevvai', fileUrl: 'jathagam.jpg', submittedAt: 'Yesterday', status: 'approved', aiMatchScore: 88, compatibilityCount: 8 },
 ];
 
-=======
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- ASTROLOGY MATCH REQUEST DATA ---
 export interface AstroMatchRequest {
   id: string;
@@ -405,15 +377,12 @@ export interface CommunityStructure {
   }[];
 }
 
-<<<<<<< HEAD
 export const MOCK_COMMUNITY_STRUCTURE: CommunityStructure[] = [
     { id: 'hindu', name: 'Hindu', theme: 'orange', castes: [{ id: 'iyer', name: 'Iyer', subCastes: ['Vadakalai', 'Thenkalai'], profileCount: 1250 }, { id: 'mudaliar', name: 'Mudaliar', subCastes: [], profileCount: 3400 }] },
     { id: 'christian', name: 'Christian', theme: 'blue', castes: [{ id: 'rc', name: 'Roman Catholic', subCastes: [], profileCount: 800 }] },
     { id: 'muslim', name: 'Muslim', theme: 'green', castes: [{ id: 'sunni', name: 'Sunni', subCastes: [], profileCount: 650 }] },
 ];
 
-=======
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- NEW EVENTS DATA ---
 export interface AdminEvent {
   id: string;
@@ -444,14 +413,11 @@ export interface SupportTicket {
   }[];
 }
 
-<<<<<<< HEAD
 export const MOCK_TICKETS: SupportTicket[] = [
     { id: 'TKT-001', user: 'Arjun Reddy', userId: 'USR-1002', subject: 'Payment failed but deducted', category: 'Billing', priority: 'High', status: 'Open', lastUpdated: '10 mins ago', messages: [{ sender: 'user', text: 'I tried to upgrade to Platinum but transaction failed.', time: '10:30 AM' }] },
     { id: 'TKT-002', user: 'Priya S', userId: 'USR-8821', subject: 'How to hide profile?', category: 'Technical', priority: 'Low', status: 'Resolved', lastUpdated: '2 days ago', messages: [{ sender: 'user', text: 'I want to hide my profile for a week.', time: 'Yesterday' }] },
 ];
 
-=======
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- NEW MODERATION DATA ---
 export interface ModerationItem {
   id: string;
@@ -465,14 +431,11 @@ export interface ModerationItem {
   timestamp: string;
 }
 
-<<<<<<< HEAD
 export const MOCK_MODERATION: ModerationItem[] = [
     { id: 'MOD-001', userId: 'USR-5541', userName: 'Raj K', type: 'Photo', content: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop', aiScore: 12, flags: [], status: 'Pending', timestamp: '10 mins ago' },
     { id: 'MOD-002', userId: 'USR-6622', userName: 'Unknown', type: 'Bio', content: 'Call me at 9876543210 for immediate marriage.', aiScore: 95, flags: ['Phone Number', 'Solicitation'], status: 'Pending', timestamp: '1 hour ago' },
 ];
 
-=======
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
 // --- NEW ANNOUNCEMENT DATA ---
 export interface Announcement {
   id: string;
@@ -493,7 +456,6 @@ export interface CMSContent {
   lastUpdated: string;
 }
 
-<<<<<<< HEAD
 export const MOCK_CMS: CMSContent[] = [
     { id: 'cms-1', section: 'Home', key: 'Hero Title', value: 'Divine Connections', type: 'text', lastUpdated: '2 days ago' },
     { id: 'cms-2', section: 'Home', key: 'Hero Subtitle', value: 'Start here.', type: 'text', lastUpdated: '2 days ago' },
@@ -504,300 +466,3 @@ export const ADMIN_STATS = {
     serverHealth: '99.9%',
     totalUsers: 12450,
 };
-=======
-export const ADMIN_STATS = {
-  totalUsers: 15420,
-  activeUsers: 8932,
-  premiumUsers: 3210,
-  revenue: '₹45.2L',
-  growth: '+12.5%',
-  pendingVerifications: 45,
-  reportedProfiles: 12,
-  aiMatchesToday: 1450,
-  serverHealth: '99.9%'
-};
-
-export const COMMUNICATION_STATS = {
-  totalMessages: 14502,
-  activeCalls: 24,
-  flaggedInteractions: 18,
-  avgResponseTime: '2m 14s'
-};
-
-export const SAFETY_ANALYTICS = {
-  reportsByType: [
-    { type: 'Fake Profile', count: 45 },
-    { type: 'Harassment', count: 32 },
-    { type: 'Spam/Scam', count: 28 },
-    { type: 'Inappropriate', count: 15 },
-  ],
-  resolutionStatus: [
-    { status: 'Resolved', count: 120 },
-    { status: 'Dismissed', count: 45 },
-    { status: 'Pending', count: 12 },
-  ]
-};
-
-export const MOCK_COMMUNICATION_LOGS: CommunicationLog[] = [
-  {
-    id: 'C-9001',
-    type: 'chat',
-    senderId: 'USR-1002', senderName: 'Rahul V',
-    receiverId: 'USR-8821', receiverName: 'Priya S',
-    timestamp: 'Just now',
-    status: 'flagged',
-    riskScore: 88,
-    metadata: {
-      contentSnippet: 'Sent a message containing restricted keywords.',
-      fullContent: 'Hey, send me money on GPay 9876543210 immediately.',
-      attachmentType: 'none'
-    }
-  },
-  {
-    id: 'C-9002',
-    type: 'video_call',
-    senderId: 'USR-3321', senderName: 'Karthik',
-    receiverId: 'USR-4422', receiverName: 'Sneha',
-    timestamp: '2 mins ago',
-    status: 'completed',
-    riskScore: 10,
-    metadata: {
-      duration: '45 mins',
-      attachmentType: 'none'
-    }
-  }
-];
-
-export const MOCK_ADMIN_USERS: AdminUser[] = Array.from({ length: 25 }).map((_, i) => ({
-  id: `USR-${1000 + i}`,
-  name: `User ${i}`,
-  email: `user${i}@divine.com`,
-  mobile: `+91 98765 432${i.toString().padStart(2, '0')}`,
-  role: 'user',
-  status: 'active',
-  plan: 'gold',
-  joinedDate: '2023-10-15',
-  lastActive: '2 hours ago',
-  verified: true,
-  reports: 0,
-  safetyScore: 90,
-  religion: 'Hindu',
-  caste: 'Iyer',
-  age: 25 + i,
-  gender: 'Male',
-  location: 'Chennai',
-  avatar: `https://ui-avatars.com/api/?name=User+${i}&background=random`,
-  profileScore: 85
-}));
-
-export const MOCK_GLOBAL_AUDIT_LOGS: GlobalAuditLog[] = [
-    { id: 'GAL-992', actorId: 'ADM-001', actorName: 'Rajesh Kumar', actorRole: 'Admin', action: 'Approved User', target: 'USR-1022', module: 'User Mgmt', timestamp: '10 mins ago', severity: 'medium', ip: '192.168.1.1' },
-    { id: 'GAL-991', actorId: 'ADM-002', actorName: 'Sarah Lee', actorRole: 'Support', action: 'Refunded Transaction', target: 'TXN-8821', module: 'Billing', timestamp: '1 hour ago', severity: 'critical', ip: '192.168.1.4' },
-    { id: 'GAL-990', actorId: 'ADM-001', actorName: 'Rajesh Kumar', actorRole: 'Admin', action: 'Updated CMS Banner', target: 'Home Page', module: 'CMS', timestamp: '3 hours ago', severity: 'low', ip: '192.168.1.1' },
-];
-
-export const MOCK_SECURITY_EVENTS: SecurityEvent[] = [
-    { id: 'SEC-101', type: 'Login Success', user: 'Rajesh Kumar (Admin)', ip: '192.168.1.1', location: 'Chennai, IN', timestamp: 'Just now', status: 'Safe' },
-    { id: 'SEC-102', type: 'Login Failed', user: 'Vikram Singh (Admin)', ip: '45.22.12.11', location: 'Moscow, RU', timestamp: '2h ago', status: 'Critical' },
-    { id: 'SEC-103', type: 'Suspicious Activity', user: 'Sarah Lee (Admin)', ip: '192.168.1.4', location: 'Bangalore, IN', timestamp: '5h ago', status: 'Warning' },
-];
-
-export const MOCK_TRANSACTIONS: Transaction[] = [
-    {
-        id: 'TXN-1001',
-        userId: 'USR-1002',
-        userName: 'Rahul V',
-        userAvatar: 'https://ui-avatars.com/api/?name=Rahul+V&background=random',
-        amount: '₹3,999',
-        plan: 'Gold',
-        status: 'success',
-        date: '2023-10-25',
-        expiryDate: '2024-01-25',
-        method: 'UPI'
-    },
-    {
-        id: 'TXN-1002',
-        userId: 'USR-8821',
-        userName: 'Priya S',
-        userAvatar: 'https://ui-avatars.com/api/?name=Priya+S&background=random',
-        amount: '₹6,999',
-        plan: 'Diamond',
-        status: 'success',
-        date: '2023-11-10',
-        expiryDate: '2024-05-10',
-        method: 'Card'
-    },
-    {
-        id: 'TXN-1003',
-        userId: 'USR-9922',
-        userName: 'Amit K',
-        userAvatar: 'https://ui-avatars.com/api/?name=Amit+K&background=random',
-        amount: '₹10,999',
-        plan: 'Platinum',
-        status: 'failed',
-        date: '2023-12-01',
-        expiryDate: '-',
-        method: 'NetBanking'
-    }
-];
-
-export const MOCK_VERIFICATIONS: VerificationRequest[] = []; 
-export const MOCK_VERIFICATION_HISTORY: VerificationRequest[] = []; 
-
-export const MOCK_REPORTS: ReportTicket[] = [
-  {
-    id: 'RPT-1001',
-    reporter: 'Priya S',
-    reporterId: 'USR-8821',
-    reportedUser: 'Rahul V',
-    reportedUserId: 'USR-1002',
-    reportedUserAvatar: 'https://ui-avatars.com/api/?name=Rahul+V&background=random',
-    reason: 'Inappropriate messages in chat.',
-    category: 'Harassment',
-    severity: 'high',
-    status: 'open',
-    timestamp: '2 hours ago',
-    aiFlag: true,
-    aiRiskScore: 85,
-    evidence: {
-      chatLogs: [
-        { sender: 'Rahul V', text: 'Can we meet at my place?', time: '10:30 AM' },
-        { sender: 'Priya S', text: 'I am not comfortable with that.', time: '10:31 AM' },
-        { sender: 'Rahul V', text: 'Don\'t be shy.', time: '10:32 AM' }
-      ]
-    }
-  },
-  {
-    id: 'RPT-1002',
-    reporter: 'System AI',
-    reporterId: 'SYS-BOT',
-    reportedUser: 'Amit K',
-    reportedUserId: 'USR-9922',
-    reportedUserAvatar: 'https://ui-avatars.com/api/?name=Amit+K&background=random',
-    reason: 'Detected multiple soliciting links in bio.',
-    category: 'Spam',
-    severity: 'medium',
-    status: 'open',
-    timestamp: '5 hours ago',
-    aiFlag: true,
-    aiRiskScore: 92
-  },
-  {
-    id: 'RPT-1003',
-    reporter: 'Suresh K',
-    reporterId: 'USR-7711',
-    reportedUser: 'Unknown User',
-    reportedUserId: 'USR-0000',
-    reportedUserAvatar: 'https://ui-avatars.com/api/?name=Unknown&background=random',
-    reason: 'Profile photo looks fake.',
-    category: 'Fake Profile',
-    severity: 'low',
-    status: 'investigating',
-    timestamp: '1 day ago',
-    aiFlag: false,
-    aiRiskScore: 45
-  },
-   {
-    id: 'RPT-1004',
-    reporter: 'Ananya M',
-    reporterId: 'USR-9921',
-    reportedUser: 'Vikram S',
-    reportedUserId: 'USR-1005',
-    reportedUserAvatar: 'https://ui-avatars.com/api/?name=Vikram+S&background=random',
-    reason: 'Asked for money immediately.',
-    category: 'Scam',
-    severity: 'critical',
-    status: 'resolved',
-    timestamp: '2 days ago',
-    aiFlag: true,
-    aiRiskScore: 98
-  }
-];
-
-export const MOCK_LOGS: SystemLog[] = []; 
-export const MOCK_USER_AUDIT_LOGS: AuditLog[] = []; 
-export const REVENUE_DATA = [{ month: 'Jan', revenue: 100 }]; 
-export const MOCK_HOROSCOPE_SUBMISSIONS: HoroscopeSubmission[] = [
-    {
-        id: 'HOR-001',
-        userId: 'USR-1002',
-        userName: 'Rahul V',
-        userAvatar: 'https://ui-avatars.com/api/?name=Rahul+V&background=random',
-        raasi: 'Mesha',
-        nakshatra: 'Aswini',
-        lagnam: 'Simha',
-        dosham: 'None',
-        fileUrl: 'horoscope.pdf',
-        submittedAt: '2 days ago',
-        status: 'pending',
-        aiMatchScore: 90,
-        compatibilityCount: 15
-    }
-]; 
-export const MOCK_COMMUNITY_STRUCTURE: CommunityStructure[] = [
-    {
-        id: 'hindu',
-        name: 'Hindu',
-        theme: 'orange',
-        castes: [
-            { id: 'iyer', name: 'Iyer', subCastes: ['Vadakalai', 'Thenkalai'], profileCount: 1200 },
-            { id: 'iyengar', name: 'Iyengar', subCastes: ['Vadakalai', 'Thenkalai'], profileCount: 1100 },
-            { id: 'mudaliar', name: 'Mudaliar', subCastes: [], profileCount: 2500 }
-        ]
-    },
-    {
-        id: 'muslim',
-        name: 'Muslim',
-        theme: 'green',
-        castes: [
-            { id: 'sunni', name: 'Sunni', subCastes: [], profileCount: 1500 },
-            { id: 'shia', name: 'Shia', subCastes: [], profileCount: 800 }
-        ]
-    },
-    {
-        id: 'christian',
-        name: 'Christian',
-        theme: 'blue',
-        castes: [
-            { id: 'rc', name: 'Roman Catholic', subCastes: [], profileCount: 1800 },
-            { id: 'csi', name: 'CSI', subCastes: [], profileCount: 1200 }
-        ]
-    }
-];
-
-// --- MOCK DATA FOR NEW MODULES ---
-
-export const MOCK_EVENTS: AdminEvent[] = [
-  { id: 'EVT-001', title: 'Elite Matrimony Meetup', type: 'In-Person', date: '2024-12-15', location: 'Taj Coromandel, Chennai', attendees: 45, status: 'Upcoming', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop' },
-  { id: 'EVT-002', title: 'NRI Virtual Connect', type: 'Virtual', date: '2024-11-20', location: 'Zoom', attendees: 120, status: 'Completed', image: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'EVT-003', title: 'Iyer Community Gathering', type: 'In-Person', date: '2025-01-10', location: 'Music Academy, Chennai', attendees: 200, status: 'Upcoming', image: 'https://images.unsplash.com/photo-1561582238-1639f7a77e5d?q=80&w=2070&auto=format&fit=crop' },
-];
-
-export const MOCK_TICKETS: SupportTicket[] = [
-  { 
-    id: 'TKT-1029', user: 'Priya S', userId: 'USR-8821', subject: 'Payment failed for Gold Plan', category: 'Billing', priority: 'High', status: 'Open', lastUpdated: '10m ago',
-    messages: [
-      { sender: 'user', text: 'I tried to upgrade to Gold but the payment failed and money was deducted.', time: '10:00 AM' }
-    ]
-  },
-  { 
-    id: 'TKT-1030', user: 'Rahul V', userId: 'USR-1002', subject: 'How to hide phone number?', category: 'Account', priority: 'Low', status: 'In Progress', lastUpdated: '1h ago',
-    messages: [
-      { sender: 'user', text: 'I want to hide my number from free users.', time: '9:00 AM' },
-      { sender: 'agent', text: 'You can do this from Settings > Privacy.', time: '9:15 AM' }
-    ]
-  },
-];
-
-export const MOCK_MODERATION: ModerationItem[] = [
-  { id: 'MOD-001', userId: 'USR-5512', userName: 'Arun K', type: 'Bio', content: 'Call me at 9876543210 for quick marriage. No time pass.', aiScore: 85, flags: ['Phone Number Detected', 'Solicitation'], status: 'Pending', timestamp: '5m ago' },
-  { id: 'MOD-002', userId: 'USR-3321', userName: 'Divya M', type: 'Photo', content: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1888&auto=format&fit=crop', aiScore: 10, flags: [], status: 'Pending', timestamp: '15m ago' },
-  { id: 'MOD-003', userId: 'USR-9988', userName: 'Bad User', type: 'Bio', content: 'I hate this app. Everyone is fake.', aiScore: 92, flags: ['Toxic Language', 'Negative Sentiment'], status: 'Pending', timestamp: '1h ago' },
-];
-
-export const MOCK_CMS: CMSContent[] = [
-  { id: 'CMS-001', section: 'Home', key: 'Hero Title', value: 'Divine Connections Start Here', type: 'text', lastUpdated: '2 days ago' },
-  { id: 'CMS-002', section: 'Banners', key: 'Promo Banner 1', value: 'https://example.com/banner1.jpg', type: 'image', lastUpdated: '1 week ago' },
-  { id: 'CMS-003', section: 'SEO', key: 'Meta Description', value: 'Best Tamil Matrimony Site', type: 'text', lastUpdated: '1 month ago' },
-];
->>>>>>> 58b1d6bef822ef00d27bf4795659b6b67adcdea9
