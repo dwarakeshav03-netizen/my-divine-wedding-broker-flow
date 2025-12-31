@@ -1,20 +1,26 @@
 import { Router } from "express";
 import {
   createProfile,
-  updateProfile,
   getProfile,
-  getProfileById,
   searchProfiles,
+  getPendingProfiles,
+  verifyProfile,
+  getAdminStats
 } from "../controllers/profileController.js";
-import { authenticateToken } from "../middleware/auth.js";
+import { authenticateToken, authorizeRole } from "../middleware/auth.js";
 
 const router = Router();
 
-// Protected routes
-router.post("/", authenticateToken, createProfile);
-router.put("/", authenticateToken, updateProfile);
-router.get("/me", authenticateToken, getProfile);
+// * Public/General Routes *
 router.get("/search", searchProfiles);
-router.get("/:profileId", getProfileById);
+
+// * User Protected Routes *
+router.post("/", authenticateToken, createProfile);
+router.get("/me", authenticateToken, getProfile);
+
+// * Admin Only Routes *
+router.get("/admin/stats", authenticateToken, authorizeRole('admin', 'super-admin'), getAdminStats);
+router.get("/admin/pending", authenticateToken, authorizeRole('admin', 'super-admin'), getPendingProfiles);
+router.patch("/admin/verify/:profileId", authenticateToken, authorizeRole('admin', 'super-admin'), verifyProfile);
 
 export default router;

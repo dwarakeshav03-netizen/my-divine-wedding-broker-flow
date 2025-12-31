@@ -3,17 +3,13 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import { initializeDatabase, closeDatabase } from "./src/config/database.js";
-import authRoutes from "./src/routes/authRoutes.js";
-import profileRoutes from "./src/routes/profileRoutes.js";
-import connectionRoutes from "./src/routes/connectionRoutes.js";
-import {
-  authenticateToken,
-  authorizeRole,
-  errorHandler,
-} from "./src/middleware/auth.js";
-import { apiLimiter } from "./src/middleware/rateLimiter.js";
-import { runMigrations } from "./migrations/run.js";
+import { initializeDatabase, closeDatabase } from "./config/database.js";
+import authRoutes from "./routes/authRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
+import connectionRoutes from "./routes/connectionRoutes.js";
+import { authenticateToken, authorizeRole, errorHandler } from "./middleware/auth.js";
+import { apiLimiter } from "./middleware/rateLimiter.js";
+import { runMigrations } from "../migrations/run.js";
 
 dotenv.config();
 
