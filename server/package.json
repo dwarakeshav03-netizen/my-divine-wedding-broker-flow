@@ -22,17 +22,17 @@
   "author": "Divine Matrimony",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "mysql2": "^3.6.5",
-    "dotenv": "^16.3.1",
-    "jsonwebtoken": "^9.0.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-    "helmet": "^7.0.0",
-    "express-validator": "^7.0.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "express-rate-limit": "^6.10.0",
+    "express-validator": "^7.0.0",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "uuid": "^9.0.0"
+    "mysql2": "^3.6.5",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "eslint": "^8.54.0",
