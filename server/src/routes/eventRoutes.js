@@ -6,6 +6,6 @@ const router = Router();
 
 // Only Admins managing events
 router.post("/", authenticateToken, authorizeRole('admin'), createEvent);
-router.get("/", authenticateToken, authorizeRole('admin'), getEvents);
+router.get("/", authenticateToken, getEvents);
 
 export default router;

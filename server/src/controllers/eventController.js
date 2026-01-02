@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 // Create a New Event
 export const createEvent = async (req, res) => {
   try {
-    const { title, description, event_date, location } = req.body;
+    const { title, description, event_date, location, event_photo } = req.body; 
     const adminId = req.user.userId; // Get the ID of the logged-in Admin
 
     // the title and date are present
@@ -17,9 +17,9 @@ export const createEvent = async (req, res) => {
 
     const eventId = uuidv4(); // a unique ID
 
-    const query = `
-      INSERT INTO events (id, title, description, event_date, location, created_by) 
-      VALUES (?, ?, ?, ?, ?, ?)
+     const query = `
+      INSERT INTO events (id, title, description, event_date, location, created_by, event_photo) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
     await executeQuery(query, [
@@ -28,7 +28,9 @@ export const createEvent = async (req, res) => {
       description,
       event_date,
       location,
-      adminId
+      adminId,
+      event_photo,
+      event_photo,
     ]);
 
     res.status(201).json({

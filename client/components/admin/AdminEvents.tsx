@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, MapPin, Users, Plus, Filter, Search, MoreHorizontal, X, Save, Trash2, Image as ImageIcon, Clock } from 'lucide-react';
@@ -10,12 +9,11 @@ interface AdminEvent {
   title: string;
   description: string;
   type: string;
-  date: string;
-  time: string;
+  event_date: string; // Changed to match backend
   location: string;
   attendees: number;
   status: string;
-  image: string;
+  event_photo: string; // Changed to match Mani Sir's request
 }
 
 const AdminEvents: React.FC = () => {
@@ -36,60 +34,79 @@ const AdminEvents: React.FC = () => {
     imageUrl: ''
   });
 
-  // Load events from LocalStorage on mount
+  // Load events from your Real Backend API
   useEffect(() => {
-    const loadEvents = () => {
-        const storedEvents = JSON.parse(localStorage.getItem('mdm_events') || '[]');
-        if (storedEvents.length > 0) {
-            setEvents(storedEvents);
-        } else {
-            setEvents([]);
+    const fetchEvents = async () => {
+      try {
+        const token = localStorage.getItem('accessToken'); 
+        const response = await fetch('http://localhost:5000/api/v1/events', {
+          method: 'GET',
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        const result = await response.json();
+        if (result.success) {
+          setEvents(result.data);
         }
+      } catch (error) {
+        console.error("Connection to backend failed:", error);
+      }
     };
-    loadEvents();
+    fetchEvents();
   }, []);
 
   const handleImageUpload = (file: File) => {
-    // For a real app, upload to server. For this demo, use Object URL.
-    // Note: Object URLs don't persist across browser refreshes perfectly in all contexts, 
-    // but works for single session SPA demo. Base64 is better for LS but has size limits.
     const url = URL.createObjectURL(file);
     setNewEvent(prev => ({ ...prev, imageFile: file, imageUrl: url }));
   };
 
-  const handleCreateEvent = () => {
+  //  Fixed handleCreateEvent
+  const handleCreateEvent = async () => {
     if (!newEvent.title || !newEvent.date || !newEvent.venue) {
         alert("Please fill in required fields.");
         return;
     }
 
-    const eventData: AdminEvent = {
-        id: `EVT-${Date.now()}`,
-        title: newEvent.title,
-        description: newEvent.description,
-        location: newEvent.venue,
-        date: newEvent.date, // Format nicely in a real app
-        time: newEvent.time,
-        type: newEvent.type,
-        status: 'Upcoming',
-        attendees: 0,
-        image: newEvent.imageUrl || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop'
-    };
+    try {
+      const token = localStorage.getItem('accessToken');
+      const eventData = {
+          title: newEvent.title,
+          description: newEvent.description,
+          location: newEvent.venue,
+          event_date: `${newEvent.date} ${newEvent.time || '00:00'}:00`,
+          event_photo: newEvent.imageUrl || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop'
+      };
 
-    const updatedEvents = [eventData, ...events];
-    setEvents(updatedEvents);
-    localStorage.setItem('mdm_events', JSON.stringify(updatedEvents));
-    
-    // Reset and Close
-    setNewEvent({ title: '', description: '', venue: '', date: '', time: '', type: 'In-Person', imageFile: null, imageUrl: '' });
-    setShowCreateModal(false);
+      const response = await fetch('http://localhost:5000/api/v1/events', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify(eventData)
+      });
+      
+      const result = await response.json();
+
+      if (result.success) {
+          alert("Success! Event saved to MySQL Database.");
+          setShowCreateModal(false);
+          window.location.reload(); 
+      } else {
+          alert("Server error: " + result.message);
+      }
+    } catch (error) {
+      alert("Could not connect to the backend server.");
+    }
   };
 
   const handleDeleteEvent = (id: string) => {
       if(confirm('Are you sure you want to delete this event?')) {
+          // In a real app, you'd call a DELETE API here
           const updatedEvents = events.filter(e => e.id !== id);
           setEvents(updatedEvents);
-          localStorage.setItem('mdm_events', JSON.stringify(updatedEvents));
       }
   }
 
@@ -132,9 +149,9 @@ const AdminEvents: React.FC = () => {
                 {filteredEvents.map(event => (
                 <div key={event.id} className="group bg-white dark:bg-[#121212] rounded-[2rem] overflow-hidden border border-gray-200 dark:border-white/5 shadow-lg hover:shadow-xl transition-all">
                     <div className="h-48 relative overflow-hidden">
-                        <img src={event.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <img src={event.event_photo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                         <div className="absolute top-4 left-4 bg-white/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">
-                            {event.type}
+                            {event.type || 'In-Person'}
                         </div>
                         <button 
                             onClick={() => handleDeleteEvent(event.id)}
@@ -150,7 +167,7 @@ const AdminEvents: React.FC = () => {
                         <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 h-8">{event.description || "No description provided."}</p>
                         <div className="space-y-2 mb-6">
                             <div className="flex items-center gap-2 text-sm text-gray-500">
-                                <Calendar size={16} /> {event.date} at {event.time}
+                                <Calendar size={16} /> {new Date(event.event_date).toLocaleDateString()}
                             </div>
                             <div className="flex items-center gap-2 text-sm text-gray-500">
                                 <MapPin size={16} /> {event.location}
@@ -158,7 +175,7 @@ const AdminEvents: React.FC = () => {
                         </div>
                         <div className="flex gap-2">
                             <button className="flex-1 py-2 bg-gray-100 dark:bg-white/5 rounded-xl text-xs font-bold hover:bg-gray-200 transition-colors">Edit</button>
-                            <button className="flex-1 py-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-xl text-xs font-bold hover:bg-purple-100 transition-colors">RSVPs ({event.attendees})</button>
+                            <button className="flex-1 py-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-xl text-xs font-bold hover:bg-purple-100 transition-colors">RSVPs ({event.attendees || 0})</button>
                         </div>
                     </div>
                 </div>
