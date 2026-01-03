@@ -47,7 +47,7 @@ export interface SystemAdmin {
 // --- ROLE BASED ACCESS CONTROL CONFIG ---
 export const ROLE_PERMISSIONS: Record<string, string[]> = {
   'Super Admin': ['*'], 
-  'Admin': ['user-database', 'interests', 'reports', 'support', 'app-management', 'settings', 'chatbot', 'events'], 
+  'Admin': ['user-database', 'interests', 'reports', 'support', 'app-management', 'settings', 'chatbot', 'events','success-stories'], 
   'Moderator': ['app-management', 'reports', 'chatbot'], 
   'Support': ['support', 'user-database', 'interests', 'approvals-log', 'chatbot'], 
   'Finance': ['payments'],

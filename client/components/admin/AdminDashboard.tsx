@@ -16,6 +16,7 @@ import AdminPayments from './AdminPayments';
 import AdminSupport from './AdminSupport';
 import AdminChatbotManager from './AdminChatbotManager'; 
 import AdminEvents from './AdminEvents';
+import AdminSuccessStories from './AdminSuccessStories';
 import AstrologerDashboard from './astrology/AstrologerDashboard';
 import { ROLE_PERMISSIONS } from '../../utils/adminData';
 
@@ -68,6 +69,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, toggleTheme, 
         case 'chatbot-manager': return <AdminChatbotManager />;
         case 'reports': return <AdminReports />;
         case 'events': return <AdminEvents />;
+        case 'success-stories': return <AdminSuccessStories />;
         
         // 'payments' accessible if role has permission (e.g. Finance)
         case 'payments': return <AdminPayments />;

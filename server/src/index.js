@@ -11,7 +11,7 @@ import { authenticateToken, authorizeRole, errorHandler } from "./middleware/aut
 import { apiLimiter } from "./middleware/rateLimiter.js";
 import { runMigrations } from "../migrations/run.js";
 import eventRoutes from "./routes/eventRoutes.js";
-
+import successStoriesRoutes from "./routes/successStoriesRoutes.js";
 
 dotenv.config();
 
@@ -54,9 +54,8 @@ app.get("/health", (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/profiles", profileRoutes);
 app.use("/api/v1/connections", connectionRoutes);
-
-// Event Management
 app.use("/api/v1/events", eventRoutes);
+app.use("/api/v1/success-stories", successStoriesRoutes);
 
 // ============ 404 HANDLER ============
 app.use((req, res) => {

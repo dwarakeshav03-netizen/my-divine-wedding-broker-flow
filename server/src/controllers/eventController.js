@@ -45,6 +45,7 @@ export const createEvent = async (req, res) => {
       message: "Failed to create event", 
       error: error.message 
     });
+
   }
 };
 
