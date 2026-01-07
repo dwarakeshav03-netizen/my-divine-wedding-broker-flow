@@ -1,6 +1,8 @@
 import { Router } from "express";
-import { getAllStories, createStory, updateStory} from "../controllers/successStoriesController.js";
+import { getAllStories, createStory, updateStory, deleteStory} from "../controllers/successStoriesController.js";
 import { authenticateToken, authorizeRole } from "../middleware/auth.js";
+import { upload } from "../middleware/upload.js";
+
 
 const router = Router();
 
@@ -8,9 +10,13 @@ const router = Router();
 router.get("/", getAllStories);
 
 // Only Admins and Super admins can add new stories (Protected)
-router.post("/", authenticateToken, authorizeRole('admin', 'super-admin'), createStory);
+router.post("/", authenticateToken, authorizeRole('admin', 'super-admin'),upload.single('story_photo'), createStory);
 
 // Only Admins and Super admins can update EXIXSTING stories(Protected)
-router.put("/:id", authenticateToken, authorizeRole('admin','super-admin'), updateStory);
+router.put("/:id", authenticateToken, authorizeRole('admin','super-admin'), upload.single('story_photo'), updateStory);
+
+// Only Admins and Super admins can delete EXIXSTING stories(Protected)
+router.put("/:id", authenticateToken, authorizeRole('admin','super-admin'), deleteStory);
+
 
 export default router;

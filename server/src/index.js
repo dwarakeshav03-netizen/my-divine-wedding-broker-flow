@@ -18,6 +18,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
 // ============ SECURITY MIDDLEWARE ============
 app.use(helmet());
 app.use(
@@ -49,6 +50,10 @@ app.get("/health", (req, res) => {
     uptime: process.uptime(),
   });
 });
+
+
+// ============ UPLODING FILES ============
+app.use('/uploads', express.static('uploads')); 
 
 // ============ API ROUTES ============
 app.use("/api/v1/auth", authRoutes);

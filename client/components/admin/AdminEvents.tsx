@@ -1,250 +1,406 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, Users, Plus, Filter, Search, MoreHorizontal, X, Save, Trash2, Image as ImageIcon, Clock } from 'lucide-react';
-import PremiumButton from '../ui/PremiumButton';
-import { AnimatedInput, AnimatedTextArea, FileUpload, AnimatedSelect } from '../profile/ProfileFormElements';
+import React, { useState, useEffect, useRef } from 'react';
+import { Eye, Pencil, Plus, X, Upload, CheckCircle, Calendar, MapPin, Search, Trash2, Clock, Heart, Video, User } from 'lucide-react';
 
-interface AdminEvent {
-  id: string;
-  title: string;
-  description: string;
-  type: string;
-  event_date: string; // Changed to match backend
-  location: string;
-  attendees: number;
-  status: string;
-  event_photo: string; // Changed to match Mani Sir's request
-}
-
-const AdminEvents: React.FC = () => {
-  const [view, setView] = useState<'list' | 'calendar'>('list');
+const AdminEvents = () => {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [events, setEvents] = useState<AdminEvent[]>([]);
-
-  // Form State
-  const [newEvent, setNewEvent] = useState({
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'VIEW' | 'EDIT' | 'CREATE'>('VIEW');
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [formData, setFormData] = useState({
     title: '',
     description: '',
-    venue: '',
-    date: '',
-    time: '',
+    location: '',
+    event_date: '',
+    event_time: '',
     type: 'In-Person',
-    imageFile: null as File | null,
-    imageUrl: ''
+    event_photo: ''
   });
 
-  // Load events from your Real Backend API
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const token = localStorage.getItem('accessToken'); 
-        const response = await fetch('http://localhost:5000/api/v1/events', {
-          method: 'GET',
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        const result = await response.json();
-        if (result.success) {
-          setEvents(result.data);
-        }
-      } catch (error) {
-        console.error("Connection to backend failed:", error);
-      }
-    };
-    fetchEvents();
-  }, []);
+  const API_BASE = "http://localhost:5000";
 
-  const handleImageUpload = (file: File) => {
-    const url = URL.createObjectURL(file);
-    setNewEvent(prev => ({ ...prev, imageFile: file, imageUrl: url }));
+  
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => {
+        setToast(null);
+      }, 3000); 
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  
+  const getImageUrl = (path: string | null | undefined) => {
+    if (!path) return 'https://via.placeholder.com/600x400?text=No+Event+Banner';
+    if (path.startsWith('http') || path.startsWith('blob')) return path;
+    return `${API_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
   };
 
-  //  Fixed handleCreateEvent
-  const handleCreateEvent = async () => {
-    if (!newEvent.title || !newEvent.date || !newEvent.venue) {
-        alert("Please fill in required fields.");
-        return;
-    }
-
+  
+  const fetchEvents = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      const eventData = {
-          title: newEvent.title,
-          description: newEvent.description,
-          location: newEvent.venue,
-          event_date: `${newEvent.date} ${newEvent.time || '00:00'}:00`,
-          event_photo: newEvent.imageUrl || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop'
-      };
+      setLoading(true);
+      const response = await fetch(`${API_BASE}/api/v1/events`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
+      });
+      const result = await response.json();
+      if (result.success) setEvents(result.data);
+    } catch (err) {
+      console.error("Failed to fetch events", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      const response = await fetch('http://localhost:5000/api/v1/events', {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` 
-        },
-        body: JSON.stringify(eventData)
+  useEffect(() => { fetchEvents(); }, []);
+
+  
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedFile(null);
+    setPreviewUrl(null);
+  };
+
+  const openModal = (mode: 'VIEW' | 'EDIT' | 'CREATE', event: any = null) => {
+    setModalMode(mode);
+    if (event) {
+      setSelectedEvent(event);
+      const dt = new Date(event.event_date);
+      const year = dt.getFullYear();
+      const month = String(dt.getMonth() + 1).padStart(2, '0');
+      const day = String(dt.getDate()).padStart(2, '0');
+      
+      setFormData({
+        ...event,
+        event_date: `${year}-${month}-${day}`,
+        event_time: dt.toTimeString().split(' ')[0].substring(0, 5)
+      });
+      setPreviewUrl(event.event_photo);
+    } else {
+      setFormData({ title: '', description: '', location: '', event_date: '', event_time: '', type: 'In-Person', event_photo: '' });
+      setPreviewUrl(null);
+    }
+    setSelectedFile(null);
+    setIsModalOpen(true);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file)); 
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      const data = new FormData();
+      data.append('title', formData.title);
+      data.append('description', formData.description);
+      data.append('location', formData.location);
+      data.append('event_date', `${formData.event_date} ${formData.event_time}:00`);
+      data.append('type', formData.type);
+      
+      if (selectedFile) data.append('event_photo', selectedFile);
+
+      const url = modalMode === 'CREATE' ? `${API_BASE}/api/v1/events` : `${API_BASE}/api/v1/events/${selectedEvent.id}`;
+      const method = modalMode === 'CREATE' ? 'POST' : 'PUT';
+
+      const response = await fetch(url, {
+        method,
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
+        body: data
       });
       
       const result = await response.json();
-
       if (result.success) {
-          alert("Success! Event saved to MySQL Database.");
-          setShowCreateModal(false);
-          window.location.reload(); 
+        
+        setToast({ message: "✨ Changes have been made!", type: 'success' });
+        setTimeout(() => {
+          closeModal();
+          fetchEvents();
+        }, 1500);
       } else {
-          alert("Server error: " + result.message);
+        setToast({ message: " Error: " + result.message, type: 'error' });
       }
-    } catch (error) {
-      alert("Could not connect to the backend server.");
+    } catch (err) {
+      setToast({ message: " Error: Check backend connection.", type: 'error' });
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const handleDeleteEvent = (id: string) => {
-      if(confirm('Are you sure you want to delete this event?')) {
-          // In a real app, you'd call a DELETE API here
-          const updatedEvents = events.filter(e => e.id !== id);
-          setEvents(updatedEvents);
-      }
-  }
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Permanent delete this event?")) return;
+    try {
+        const response = await fetch(`${API_BASE}/api/v1/events/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
+        });
+        if (response.ok) fetchEvents();
+    } catch (error) { console.error(error); }
+  };
 
-  const filteredEvents = events.filter(e => e.title.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredEvents = events.filter((e: any) => 
+    e.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="space-y-6 h-full flex flex-col">
-      <div className="flex justify-between items-center shrink-0">
-        <h2 className="text-2xl font-bold flex items-center gap-2"><Calendar className="text-orange-500" /> Event Management</h2>
-        <div className="flex gap-2">
-           <PremiumButton onClick={() => setShowCreateModal(true)} icon={<Plus size={16} />} className="!py-2 !px-4 !text-sm">Create Event</PremiumButton>
+    <>
+      <div className="p-8 bg-white min-h-screen font-sans">
+        
+        <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
+          <div>
+            <h2 className="text-3xl font-black text-gray-800 uppercase tracking-tight flex items-center gap-3">
+              <Calendar className="text-purple-600" size={28} /> EVENT MANAGEMENT
+            </h2>
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">Organize and manage community gatherings</p>
+          </div>
+          <button 
+            onClick={() => openModal('CREATE')}
+            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-purple-200 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 whitespace-nowrap"
+          >
+            <Plus size={18}/> Create New Event
+          </button>
         </div>
-      </div>
 
-      <div className="flex gap-4 items-center bg-white dark:bg-[#121212] p-4 rounded-2xl border border-gray-200 dark:border-white/5 shadow-sm">
-         <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-xl">
-            <button onClick={() => setView('list')} className={`px-4 py-2 rounded-lg text-sm font-bold ${view === 'list' ? 'bg-white dark:bg-gray-800 shadow' : 'text-gray-500'}`}>List View</button>
-            <button onClick={() => setView('calendar')} className={`px-4 py-2 rounded-lg text-sm font-bold ${view === 'calendar' ? 'bg-white dark:bg-gray-800 shadow' : 'text-gray-500'}`}>Calendar</button>
-         </div>
-         <div className="relative flex-1">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input 
-               type="text" 
-               placeholder="Search events..." 
-               value={searchTerm}
-               onChange={e => setSearchTerm(e.target.value)}
-               className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-white/5 border-none rounded-xl text-sm outline-none"
-            />
-         </div>
-      </div>
+        
+        <div className="mb-8 relative max-w-md">
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <input 
+            type="text" 
+            placeholder="Search events..." 
+            className="w-full pl-14 pr-6 py-4 rounded-[1.5rem] border border-gray-100 shadow-sm outline-none focus:ring-4 focus:ring-purple-500/10 bg-white font-bold text-gray-600 transition-all"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-         {filteredEvents.length === 0 ? (
-             <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-                 <Calendar size={48} className="opacity-20 mb-4" />
-                 <p>No events found. Create one to get started.</p>
-             </div>
-         ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredEvents.map(event => (
-                <div key={event.id} className="group bg-white dark:bg-[#121212] rounded-[2rem] overflow-hidden border border-gray-200 dark:border-white/5 shadow-lg hover:shadow-xl transition-all">
-                    <div className="h-48 relative overflow-hidden">
-                        <img src={event.event_photo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                        <div className="absolute top-4 left-4 bg-white/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">
-                            {event.type || 'In-Person'}
-                        </div>
-                        <button 
-                            onClick={() => handleDeleteEvent(event.id)}
-                            className="absolute top-4 right-4 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-                        >
-                            <Trash2 size={14} />
-                        </button>
+       
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl shadow-gray-200/50 overflow-hidden">
+          <table className="w-full text-left">
+            <thead className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest border-b border-gray-100">
+              <tr>
+                <th className="p-8">Event Details</th>
+                <th className="p-8">Type</th>
+                <th className="p-8">Venue / Location</th>
+                <th className="p-8">Date & Time</th>
+                <th className="p-8 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {loading ? (
+                 <tr><td colSpan={5} className="p-20 text-center text-gray-300 font-bold animate-pulse uppercase tracking-widest">Fetching events...</td></tr>
+              ) : filteredEvents.map((event: any) => (
+                <tr key={event.id} className="hover:bg-purple-50/10 transition-all duration-300 group">
+                  <td className="p-8">
+                    <div className="flex items-center gap-4">
+                      <img 
+                        src={getImageUrl(event.event_photo)} 
+                        className="w-16 h-16 rounded-2xl object-cover border-4 border-white shadow-md group-hover:scale-110 transition-transform duration-500" 
+                        alt=""
+                      />
+                      <div>
+                        <div className="font-black text-gray-800 text-base uppercase">{event.title}</div>
+                        <div className="text-[10px] text-gray-300 font-mono uppercase tracking-tighter mt-0.5">ID: {event.id.substring(0,8)}...</div>
+                      </div>
                     </div>
-                    <div className="p-6">
-                        <div className="flex justify-between items-start mb-2">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate pr-4">{event.title}</h3>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 h-8">{event.description || "No description provided."}</p>
-                        <div className="space-y-2 mb-6">
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                                <Calendar size={16} /> {new Date(event.event_date).toLocaleDateString()}
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                                <MapPin size={16} /> {event.location}
-                            </div>
-                        </div>
-                        <div className="flex gap-2">
-                            <button className="flex-1 py-2 bg-gray-100 dark:bg-white/5 rounded-xl text-xs font-bold hover:bg-gray-200 transition-colors">Edit</button>
-                            <button className="flex-1 py-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-xl text-xs font-bold hover:bg-purple-100 transition-colors">RSVPs ({event.attendees || 0})</button>
-                        </div>
+                  </td>
+                  <td className="p-8">
+                     
+                     <div className="flex items-center gap-2 text-sm font-bold text-gray-500 uppercase whitespace-nowrap">
+                        {event.type === 'Virtual' ? <Video size={14} className="text-blue-300" /> : <User size={14} className="text-pink-300" />}
+                        {event.type || 'In-Person'}
+                     </div>
+                  </td>
+                  <td className="p-8 text-sm font-bold text-gray-500 uppercase">
+                    <div className="flex items-center gap-2"><MapPin size={14} className="text-purple-300" /> {event.location}</div>
+                  </td>
+                  <td className="p-8 text-sm font-bold text-gray-500 uppercase">
+                    <div className="flex items-center gap-2 text-gray-700"><Calendar size={14} className="text-purple-400" /> {new Date(event.event_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})}</div>
+                    <div className="flex items-center gap-2 mt-1 text-[11px] text-gray-700 font-bold tracking-widest uppercase"><Clock size={12}/> {new Date(event.event_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                  </td>
+                  <td className="p-8 text-right">
+                    <div className="flex justify-end gap-1">
+                      <button onClick={() => openModal('VIEW', event)} className="p-3 text-blue-400 hover:bg-blue-50 rounded-xl transition-all active:scale-90"><Eye size={20} /></button>
+                      <button onClick={() => openModal('EDIT', event)} className="p-3 text-orange-400 hover:bg-orange-50 rounded-xl transition-all active:scale-90"><Pencil size={20} /></button>
+                      <button onClick={() => handleDelete(event.id)} className="p-3 text-gray-300 hover:text-red-500 rounded-xl transition-all active:scale-90"><Trash2 size={20} /></button>
                     </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* --- MODAL WINDOW --- */}
+        {isModalOpen && (
+          <div 
+            onClick={closeModal}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm p-4 cursor-pointer"
+          >
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-[3rem] w-full max-w-xl shadow-2xl overflow-hidden animate-in zoom-in duration-300 cursor-default"
+            >
+              <header className="p-10 border-b border-gray-50 flex justify-between items-center bg-white">
+                <div>
+                  <h2 className="text-2xl font-black text-gray-800 uppercase tracking-tighter flex items-center gap-3">
+                    {modalMode === 'CREATE' ? <Plus className="text-purple-600"/> : <Calendar className="text-purple-600"/>}
+                    {modalMode === 'CREATE' ? 'New Event' : modalMode === 'EDIT' ? 'Edit Event' : 'Event Details'}
+                  </h2>
+                  <p className="text-[9px] font-bold text-pink-500 uppercase tracking-widest">Divine Admin Control Panel</p>
                 </div>
-                ))}
+                
+                <button 
+                  onClick={closeModal} 
+                  className="group p-3 bg-gray-50 hover:bg-red-50 rounded-full text-gray-400 hover:text-red-500 transition-all duration-200 active:scale-90 shadow-sm"
+                >
+                  <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
+                </button>
+              </header>
+
+              <div className="p-10 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <div 
+                  onClick={() => modalMode !== 'VIEW' && fileInputRef.current?.click()}
+                  className={`relative h-64 rounded-[2.5rem] flex flex-col items-center justify-center border-4 border-dashed transition-all overflow-hidden
+                  ${previewUrl ? 'border-transparent' : 'border-purple-100 bg-purple-50/30'}
+                  ${modalMode !== 'VIEW' ? 'cursor-pointer hover:border-purple-300' : ''}`}
+                >
+                  <input type="file" ref={fileInputRef} hidden onChange={handleFileChange} accept="image/*" />
+                  
+                  {previewUrl ? (
+                     <img src={getImageUrl(previewUrl)} className="w-full h-full object-cover shadow-2xl" alt="Event" />
+                  ) : (
+                    <>
+                      <div className="bg-white p-4 rounded-full shadow-lg text-purple-600 mb-4"><Plus size={32}/></div>
+                      <p className="text-sm font-black text-purple-600">Click to Upload Event Banner</p>
+                    </>
+                  )}
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Event Title</label>
+                    <input 
+                      type="text" 
+                      disabled={modalMode === 'VIEW'}
+                      className="w-full px-6 py-4 bg-gray-50 rounded-2xl font-bold text-gray-700 outline-none border-2 border-transparent focus:border-purple-200 transition-all disabled:opacity-50"
+                      value={formData.title}
+                      onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Type</label>
+                      <select 
+                        disabled={modalMode === 'VIEW'}
+                        className="w-full px-6 py-4 bg-gray-50 rounded-2xl font-bold text-gray-700 outline-none border-2 border-transparent focus:border-purple-200 transition-all disabled:opacity-50"
+                        value={formData.type}
+                        onChange={(e) => setFormData({...formData, type: e.target.value})}
+                      >
+                        <option value="In-Person">In-Person</option>
+                        <option value="Virtual">Virtual</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Venue / Link</label>
+                      <input 
+                        type="text" 
+                        disabled={modalMode === 'VIEW'}
+                        className="w-full px-6 py-4 bg-gray-50 rounded-2xl font-bold text-gray-700 outline-none border-2 border-transparent focus:border-purple-200 transition-all disabled:opacity-50"
+                        value={formData.location}
+                        onChange={(e) => setFormData({...formData, location: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Date</label>
+                      <input 
+                        type={modalMode === 'VIEW' ? 'text' : 'date'} 
+                        disabled={modalMode === 'VIEW'}
+                        className="w-full px-6 py-4 bg-gray-50 rounded-2xl font-bold text-gray-700 outline-none border-2 border-transparent focus:border-purple-200 transition-all disabled:opacity-80"
+                        value={modalMode === 'VIEW' ? new Date(formData.event_date).toLocaleDateString('en-GB') : formData.event_date}
+                        onChange={(e) => setFormData({...formData, event_date: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Time</label>
+                      <input 
+                        type="time" 
+                        disabled={modalMode === 'VIEW'}
+                        className="w-full px-6 py-4 bg-gray-50 rounded-2xl font-bold text-gray-700 outline-none border-2 border-transparent focus:border-purple-200 transition-all disabled:opacity-80"
+                        value={formData.event_time}
+                        onChange={(e) => setFormData({...formData, event_time: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Description</label>
+                    <textarea 
+                      rows={4}
+                      disabled={modalMode === 'VIEW'}
+                      className="w-full px-6 py-4 bg-gray-50 rounded-[2rem] font-medium text-gray-700 outline-none border-2 border-transparent focus:border-purple-200 transition-all resize-none disabled:opacity-50"
+                      value={formData.description}
+                      onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <footer className="p-10 bg-gray-50/50 border-t border-gray-100 flex justify-end gap-6 items-center">
+                <button 
+                  onClick={closeModal} 
+                  className="text-[11px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors active:scale-95"
+                >
+                  {modalMode === 'VIEW' ? 'Close View' : 'Cancel'}
+                </button>
+                {modalMode !== 'VIEW' && (
+                  <button 
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-10 py-5 rounded-[1.5rem] font-black text-[11px] uppercase tracking-widest shadow-xl flex items-center gap-3 active:scale-95 disabled:bg-gray-300 transition-all"
+                  >
+                    {isSaving ? 'Processing...' : 'Save Changes'}
+                  </button>
+                )}
+              </footer>
             </div>
-         )}
+          </div>
+        )}
       </div>
 
-      {/* CREATE MODAL */}
-      <AnimatePresence>
-        {showCreateModal && (
-            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                <motion.div 
-                    initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-                    className="bg-white dark:bg-[#1a1a1a] p-8 rounded-[2rem] shadow-2xl w-full max-w-lg border border-white/10 max-h-[90vh] overflow-y-auto custom-scrollbar"
-                >
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-xl font-bold flex items-center gap-2"><Plus className="text-purple-500" /> Create New Event</h3>
-                        <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
-                            <X size={20} />
-                        </button>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-xl border border-dashed border-gray-300 dark:border-white/20 text-center">
-                             {newEvent.imageUrl ? (
-                                 <div className="relative h-40 w-full rounded-lg overflow-hidden group">
-                                     <img src={newEvent.imageUrl} className="w-full h-full object-cover" />
-                                     <button 
-                                        onClick={() => setNewEvent({...newEvent, imageUrl: '', imageFile: null})}
-                                        className="absolute inset-0 bg-black/50 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                                     >
-                                         <X size={24} /> Remove
-                                     </button>
-                                 </div>
-                             ) : (
-                                <FileUpload label="Event Banner Image" accept="image/*" onFileSelect={handleImageUpload} />
-                             )}
-                        </div>
-
-                        <AnimatedInput label="Event Title" value={newEvent.title} onChange={e => setNewEvent({...newEvent, title: e.target.value})} />
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                            <AnimatedSelect 
-                                label="Event Type" 
-                                value={newEvent.type} 
-                                options={[{value:'In-Person', label:'In-Person'}, {value:'Virtual', label:'Virtual'}, {value:'Webinar', label:'Webinar'}]}
-                                onChange={e => setNewEvent({...newEvent, type: e.target.value})}
-                            />
-                             <AnimatedInput label="Date" type="date" value={newEvent.date} onChange={e => setNewEvent({...newEvent, date: e.target.value})} />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                             <AnimatedInput label="Time" type="time" value={newEvent.time} onChange={e => setNewEvent({...newEvent, time: e.target.value})} />
-                             <AnimatedInput label="Venue / Link" value={newEvent.venue} onChange={e => setNewEvent({...newEvent, venue: e.target.value})} icon={<MapPin size={18} />} />
-                        </div>
-
-                        <AnimatedTextArea label="Description" value={newEvent.description} onChange={e => setNewEvent({...newEvent, description: e.target.value})} placeholder="Event details, agenda, etc..." />
-
-                        <div className="pt-4 flex gap-3">
-                            <button onClick={() => setShowCreateModal(false)} className="flex-1 py-3 font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl">Cancel</button>
-                            <PremiumButton onClick={handleCreateEvent} className="flex-1" icon={<Save size={18} />}>Publish Event</PremiumButton>
-                        </div>
-                    </div>
-                </motion.div>
+      
+      {toast && (
+        <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[9999] animate-in slide-in-from-top duration-300">
+          <div className={`px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border-2 bg-white ${toast.type === 'success' ? 'border-green-400 text-green-600' : 'border-red-400 text-red-600'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${toast.type === 'success' ? 'bg-green-100' : 'bg-red-100'}`}>
+              {toast.type === 'success' ? '✅' : '❌'}
             </div>
-        )}
-      </AnimatePresence>
-    </div>
+            <p className="font-black text-xs uppercase tracking-widest">{toast.message}</p>
+            
+            <button 
+              onClick={() => setToast(null)} 
+              className="ml-2 p-1.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-900 transition-all active:scale-90"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
