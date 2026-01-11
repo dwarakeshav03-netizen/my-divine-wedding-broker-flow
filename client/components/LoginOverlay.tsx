@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, ArrowRight, ChevronLeft, Shield, Check, AlertCircle, Unlock, Smartphone, Lock, Loader2, MessageSquare } from 'lucide-react';
+import axios from 'axios';
 import Logo from './ui/Logo';
 import { AuthService } from '../utils/authService';
 import { COUNTRY_CODES } from '../utils/validation';
@@ -394,7 +395,7 @@ const OtpVerifyView: React.FC<{ mobile: string, onBack: () => void, onSuccess: (
 };
 
 // --- VIEW 3: LEGACY EMAIL LOGIN ---
-const EmailLoginView: React.FC<any> = ({ onBack, onSuccess }) => {
+const EmailLoginView: React.FC<{ onBack: () => void, onSuccess: () => void }> = ({ onBack, onSuccess }) => {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
    const [loading, setLoading] = useState(false);
@@ -404,17 +405,25 @@ const EmailLoginView: React.FC<any> = ({ onBack, onSuccess }) => {
       e.preventDefault();
       setLoading(true);
       setError('');
-      await new Promise(r => setTimeout(r, 1500)); // Mock delay
-
-      const storedUsers = JSON.parse(localStorage.getItem('mdm_users') || '[]');
-      const user = storedUsers.find((u: any) => u.email.toLowerCase() === email.toLowerCase());
       
-      if ((user && user.password === password) || (email === 'user@divine.com' && password === 'password')) {
-          localStorage.setItem('mdm_user_session', email);
-          onSuccess();
-      } else {
-          setError('Invalid credentials');
-          setLoading(false);
+      try {
+         
+         const response = await axios.post('http://localhost:5000/api/v1/auth/login', { 
+            email: email, 
+            password: password 
+         });
+
+         if (response.data.success) {
+            const { accessToken, role } = response.data.data;
+            localStorage.setItem('token', accessToken);
+            localStorage.setItem('userRole', role.toString()); 
+            localStorage.setItem('mdm_user_session', email);
+            onSuccess(); 
+         }
+      } catch (err: any) {
+         setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      } finally {
+         setLoading(false);
       }
    };
 
@@ -424,7 +433,7 @@ const EmailLoginView: React.FC<any> = ({ onBack, onSuccess }) => {
             <ChevronLeft size={14} /> Back to Phone Login
          </button>
          
-         <form onSubmit={handleLogin} className="space-y-4">
+         <form onSubmit={handleLogin} className="space-y-6">
             <PremiumInput 
                label="Email Address" 
                type="email" 

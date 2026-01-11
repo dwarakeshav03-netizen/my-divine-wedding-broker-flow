@@ -19,8 +19,8 @@ router.post("/", authenticateToken, createProfile);
 router.get("/me", authenticateToken, getProfile);
 
 // * Admin Only Routes *
-router.get("/admin/stats", authenticateToken, authorizeRole('admin', 'super-admin'), getAdminStats);
-router.get("/admin/pending", authenticateToken, authorizeRole('admin', 'super-admin'), getPendingProfiles);
-router.patch("/admin/verify/:profileId", authenticateToken, authorizeRole('admin', 'super-admin'), verifyProfile);
+router.get("/admin/stats", authenticateToken, authorizeRole(1,2), getAdminStats);
+router.get("/admin/pending", authenticateToken, authorizeRole(1,2), getPendingProfiles);
+router.patch("/admin/verify/:profileId", authenticateToken, authorizeRole(1,2), verifyProfile);
 
 export default router;

@@ -10,13 +10,11 @@ const router = Router();
 router.get("/", getAllStories);
 
 // Only Admins and Super admins can add new stories (Protected)
-router.post("/", authenticateToken, authorizeRole('admin', 'super-admin'),upload.single('story_photo'), createStory);
+router.post("/", authenticateToken, authorizeRole(1,2),upload.single('story_photo'), createStory);
 
 // Only Admins and Super admins can update EXIXSTING stories(Protected)
-router.put("/:id", authenticateToken, authorizeRole('admin','super-admin'), upload.single('story_photo'), updateStory);
+router.put("/:id", authenticateToken, authorizeRole(1,2), upload.single('story_photo'), updateStory);
 
 // Only Admins and Super admins can delete EXIXSTING stories(Protected)
-router.put("/:id", authenticateToken, authorizeRole('admin','super-admin'), deleteStory);
-
-
+router.delete("/:id", authenticateToken, authorizeRole(1,2), deleteStory);
 export default router;

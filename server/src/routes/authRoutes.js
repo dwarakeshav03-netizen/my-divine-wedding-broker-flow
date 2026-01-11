@@ -6,8 +6,9 @@ import {
   logoutUser,
   getCurrentUser,
 } from "../controllers/authController.js";
-import { authenticateToken } from "../middleware/auth.js";
+import { authenticateToken,authorizeRole } from "../middleware/auth.js";
 import { loginLimiter, authLimiter } from "../middleware/rateLimiter.js";
+
 
 const router = Router();
 

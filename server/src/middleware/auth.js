@@ -2,67 +2,63 @@ import { verifyAccessToken } from "../utils/tokenManager.js";
 
 export const authenticateToken = (req, res, next) => {
   try {
+    
     const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN
+    const token = authHeader && authHeader.split(" ")[1]; 
 
     if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "Access token required",
-      });
+      return res.status(401).json({ success: false, message: "Access token required" });
     }
 
     const decoded = verifyAccessToken(token);
-    req.user = decoded;
+    req.user = decoded; 
     next();
   } catch (error) {
-    return res.status(403).json({
-      success: false,
-      message: "Invalid or expired token",
-    });
+    
+    return res.status(403).json({ success: false, message: "Invalid or expired token" });
   }
 };
 
 export const authorizeRole = (...allowedRoles) => {
   return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated",
-      });
+    console.log("--- SECURITY CHECK ---");
+    
+    
+    const roleMapping = {
+      'super_admin': 1,
+      'super admin': 1,
+      'admin': 2,
+      'user': 3,
+      'self': 3
+    };
+
+    let userRole = req.user.role;
+
+    
+    if (typeof userRole === 'string') {
+      const normalizedRole = userRole.toLowerCase();
+      if (roleMapping[normalizedRole]) {
+        userRole = roleMapping[normalizedRole];
+      }
     }
 
-    if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({
-        success: false,
-        message: "Insufficient permissions for this action",
+    console.log("Token Role (Original):", req.user.role);
+    console.log("Token Role (Mapped):", userRole);
+    console.log("Allowed IDs:", allowedRoles);
+
+    
+    if (!req.user || !allowedRoles.includes(Number(userRole))) {
+      return res.status(403).json({ 
+        success: false, 
+        message: "Insufficient permissions: Your role ID must be in " + allowedRoles 
       });
     }
-
+    
     next();
   };
 };
 
 export const errorHandler = (err, req, res, next) => {
   console.error("Error:", err);
-
-  if (err.validation) {
-    return res.status(400).json({
-      success: false,
-      message: "Validation error",
-      errors: err.errors,
-    });
-  }
-
-  if (err.name === "JsonWebTokenError") {
-    return res.status(403).json({
-      success: false,
-      message: "Invalid token",
-    });
-  }
-
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || "Internal server error",
-  });
+  res.status(err.status || 500).json({ success: false, message: err.message || "Internal server error" });
 };

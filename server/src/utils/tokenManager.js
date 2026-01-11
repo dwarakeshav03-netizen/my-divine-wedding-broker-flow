@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 
+
 export const generateTokens = (userId, role) => {
-  const payload = { userId, role, iat: Math.floor(Date.now() / 1000) };
+  const payload = { userId: userId, role: role, iat: Math.floor(Date.now() / 1000) };
 
   const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",

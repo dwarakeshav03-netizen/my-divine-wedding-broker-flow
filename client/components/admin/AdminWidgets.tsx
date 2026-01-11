@@ -10,7 +10,7 @@ import Logo from '../ui/Logo';
 import useTranslation from '../../hooks/useTranslation';
 import { ROLE_PERMISSIONS } from '../../utils/adminData';
 
-// --- SIDEBAR ---
+
 interface AdminSidebarProps {
   currentView: string;
   onChangeView: (view: string) => void;
@@ -23,21 +23,26 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentView, onChang
   const { t } = useTranslation();
   const [role, setRole] = useState('Manager');
 
+  const [permissions, setPermissions] = useState<string[]>([]);
+
   useEffect(() => {
-     const storedRole = localStorage.getItem('mdm_admin_role');
-     if (storedRole) setRole(storedRole);
+     
+     const numericRole = localStorage.getItem('userRole');
+     let userRole = 'User';
+     
+     
+     if (numericRole === '1') userRole = 'Super Admin';
+     else if (numericRole === '2') userRole = 'Admin';
+     else if (numericRole === '4') userRole = 'Astrologer';
+     
+     setRole(userRole);
+     setPermissions(ROLE_PERMISSIONS[userRole as keyof typeof ROLE_PERMISSIONS] || []);
   }, []);
-  
-  const permissions = ROLE_PERMISSIONS[role] || [];
-  const hasAccess = (ids: string[]) => {
-      if (permissions.includes('*')) return true;
-      return ids.some(id => permissions.includes(id));
-  };
 
   const fullMenu = [
     { 
         section: t('admin.workspace'), 
-        requiredPermissions: ['new-accounts', 'user-database', 'events'],
+        requiredPermissions: ['new-accounts', 'user-database', 'events','success-stories'],
         items: [
             { id: 'new-accounts', label: t('admin.newAccounts'), icon: UserPlus, badge: 'High Priority', perm: 'new-accounts' },
             { id: 'user-database', label: t('admin.userDb'), icon: Users, perm: 'user-database' },
@@ -97,6 +102,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentView, onChang
 
       <div className="flex-1 py-8 px-4 space-y-8 overflow-y-auto custom-scrollbar">
         {fullMenu.map((section, idx) => {
+           const hasAccess = (perms: string[]) => perms.some(p => permissions.includes('*') || permissions.includes(p));
            if (!hasAccess(section.requiredPermissions)) return null;
 
            return (
@@ -193,9 +199,9 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleTheme, darkMode,
      setRole(localStorage.getItem('mdm_admin_role') || 'User');
   }, []);
 
-  // Map view IDs to localized titles if needed, otherwise format
+  
   const formatTitle = (id: string) => {
-      // Basic formatting
+      
       return id.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
 
@@ -254,7 +260,7 @@ export const KpiCard: React.FC<{
   color: string; 
   onClick?: () => void;
 }> = ({ title, value, trend, icon, color, onClick }) => {
-  // Styles (same as before)
+  
   const getColorStyles = (c: string) => {
     if (c.includes('green')) return 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400';
     if (c.includes('blue')) return 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400';

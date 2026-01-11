@@ -4,55 +4,45 @@ import { v4 as uuidv4 } from "uuid";
 // Create a New Event
 export const createEvent = async (req, res) => {
   try {
-    const { title, description, event_date, location, type } = req.body; 
+    const { title, description, event_date, location } = req.body;
+    const userId = req.user.userId || req.user.id;
     const event_photo = req.file ? `/uploads/${req.file.filename}` : null;
-    const adminId = req.user.userId; 
+    console.log("--- ATTEMPTING EVENT INSERT ---");
+    console.log("Values:", [title, event_date, userId]);
 
-    
-    if (!title || !event_date) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Title and Event Date are required." 
-      });
-    }
-
-    const eventId = uuidv4(); 
-
-     const query = `
+    const query = `
       INSERT INTO events (id, title, description, event_date, location, created_by, event_photo) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      VALUES (UUID(), ?, ?, ?, ?, ?, ?)
     `;
+    const params = [
+      title || null,
+      description || null,
+      event_date || null, 
+      location || null,
+      userId || null,
+      event_photo
+    ];
 
-    await executeQuery(query, [
-      eventId,
-      title,
-      description,
-      event_date,
-      location,
-      adminId,
-      event_photo,
-      type || 'In - person'
-    ]);
+    await executeQuery(query, params);
 
-    res.status(201).json({
-      success: true,
-      message: "Event created successfully",
-      data: { eventId, title }
+    res.status(201).json({ 
+      success: true, 
+      message: "✅ Event created successfully!" 
     });
+
   } catch (error) {
-    console.error("Create event error:", error);
+    console.error("EVENT CONTROLLER ERROR:", error.message);
     res.status(500).json({ 
       success: false, 
-      message: "Failed to create event", 
+      message: "Database Error", 
       error: error.message 
     });
-
   }
 };
 
 
 
-// 2. Get events to show 
+//  Get events to show 
 export const getEvents = async (req, res) => {
   try {
     const query = `
@@ -75,7 +65,7 @@ export const getEvents = async (req, res) => {
 
 
 
-// 3. Updating an event
+// Updating an event
 export const updateEvent = async (req, res) => {
   try {
     const { id } = req.params;

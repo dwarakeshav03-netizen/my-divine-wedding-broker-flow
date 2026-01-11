@@ -20,7 +20,10 @@ const PORT = process.env.PORT || 5000;
 
 
 // ============ SECURITY MIDDLEWARE ============
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" } // Allows port 3000 to access resources
+}));
+
 app.use(
   cors({
     origin: (process.env.CORS_ORIGIN || "http://localhost:3000").split(","),
@@ -29,6 +32,9 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// ============ UPLOADING ============
+app.use('/uploads', express.static('uploads'));
 
 // ============ BODY PARSING ============
 app.use(express.json({ limit: "10mb" }));
@@ -51,9 +57,6 @@ app.get("/health", (req, res) => {
   });
 });
 
-
-// ============ UPLODING FILES ============
-app.use('/uploads', express.static('uploads')); 
 
 // ============ API ROUTES ============
 app.use("/api/v1/auth", authRoutes);

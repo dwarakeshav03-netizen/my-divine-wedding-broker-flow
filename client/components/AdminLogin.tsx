@@ -3,12 +3,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Lock, Key, Eye, EyeOff, X, Fingerprint, ChevronRight, Activity, CheckCircle, AlertTriangle, Crown } from 'lucide-react';
 import { MOCK_SYSTEM_ADMINS } from '../utils/adminData';
+import axios from 'axios';
+
 
 interface AdminLoginProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess?: () => void; // Standard Admin success
-  onSuperAdminSuccess?: () => void; // New Super Admin success
+  onLoginSuccess?: () => void; 
+  onSuperAdminSuccess?: () => void; 
 }
 
 const AdminLogin: React.FC<AdminLoginProps> = ({ isOpen, onClose, onLoginSuccess, onSuperAdminSuccess }) => {
@@ -21,7 +23,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ isOpen, onClose, onLoginSuccess
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Polygonal Background Animation
+  
   useEffect(() => {
     if (!isOpen || !canvasRef.current) return;
 
@@ -105,72 +107,76 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ isOpen, onClose, onLoginSuccess
     };
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setStatus('idle');
-    setDetectedRole(null);
     
-    setTimeout(() => {
-      // 1. Check Super Admin Hardcoded
-      if (adminId === 'SUPER_ADMIN' && adminKey === 'godmode123') {
-          setStatus('super_success');
-          localStorage.setItem('mdm_admin_role', 'Super Admin');
+    try {
+      const response = await axios.post('http://localhost:5000/api/v1/auth/login', { 
+        email: adminId, 
+        password: adminKey 
+      });
+
+      console.log("SERVER RESPONSE:", response.data);
+
+      if (response.data && response.data.success) {
+        const userData = response.data.data;
+        localStorage.setItem('token', userData.accessToken);
+        
+        
+        let roleId = 0;
+        const serverRole = userData.role;
+        if (serverRole == 1 || String(serverRole).toLowerCase().includes('super')) roleId = 1;
+        else if (serverRole == 2 || String(serverRole).toLowerCase().includes('admin')) roleId = 2;
+
+        localStorage.setItem('userRole', roleId.toString());
+
+        if (roleId === 1) {
+          setStatus('super_success'); 
           setTimeout(() => {
-            resetForm();
+            resetForm(); 
             if (onSuperAdminSuccess) onSuperAdminSuccess();
-            else onClose();
           }, 1500);
-          return;
-      }
-      
-      // 2. Check against MOCK_SYSTEM_ADMINS
-      const foundAdmin = MOCK_SYSTEM_ADMINS.find(
-          (a) => (a.email === adminId || a.id === adminId) && (a.password === adminKey || adminKey === 'secure123')
-      );
-
-      if (foundAdmin) {
-          if (foundAdmin.status !== 'Active') {
-              setStatus('error');
-              setIsLoading(false);
-              alert("Account is " + foundAdmin.status);
-              return;
-          }
-
-          setStatus('success');
-          setDetectedRole(foundAdmin.role);
-          localStorage.setItem('mdm_admin_role', foundAdmin.role);
-          localStorage.setItem('mdm_admin_name', foundAdmin.name);
-          
+        } else if (roleId === 2) {
+          setStatus('success'); 
+          setDetectedRole('Admin');
           setTimeout(() => {
-            resetForm();
+            resetForm(); 
             if (onLoginSuccess) onLoginSuccess();
-            else onClose();
           }, 1500);
-      } else {
-        setStatus('error');
-        setIsLoading(false);
+        } else {
+          resetForm();
+          onClose();
+        }
       }
-    }, 1500);
+    } catch (error: any) {
+      console.error("Login Error:", error);
+      setStatus('error');
+      setIsLoading(false); 
+    }
   };
 
+  
   const resetForm = () => {
-    setIsLoading(false);
-    setStatus('idle');
-    setAdminId('');
-    setAdminKey('');
-    setDetectedRole(null);
+    setIsLoading(false);      
+    setStatus('idle');         
+    setAdminId('');           
+    setAdminKey('');          
+    setDetectedRole(null);    
   };
 
+  
   const fillDemo = (email: string) => {
     setAdminId(email);
-    setAdminKey('password123');
+    setAdminKey('password123'); 
   };
   
   const fillSuperDemo = () => {
-    setAdminId('SUPER_ADMIN');
+    setAdminId('superadmin@divine.com'); 
     setAdminKey('godmode123');
-  }
+  };
 
   if (!isOpen) return null;
 

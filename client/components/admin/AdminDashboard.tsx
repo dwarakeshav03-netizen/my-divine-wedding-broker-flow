@@ -32,21 +32,39 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, toggleTheme, 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-     const storedRole = localStorage.getItem('mdm_admin_role') || 'Admin';
-     setRole(storedRole);
-     
-     const permissions = ROLE_PERMISSIONS[storedRole] || [];
-     
-     // Determine default view based on role permissions
-     if (permissions.includes('*')) setCurrentView('overview');
-     else if (permissions.includes('user-database')) setCurrentView('user-database');
-     else if (permissions.includes('astrology-dashboard')) setCurrentView('astrology-dashboard');
-     else if (permissions.includes('payments')) setCurrentView('payments');
-     else if (permissions.includes('support')) setCurrentView('support');
-     else if (permissions.includes('reports')) setCurrentView('reports');
-     else setCurrentView('user-database'); // Fallback
+    const numericRole = localStorage.getItem('userRole');
+    
+    
+    let currentRole = 'User'; 
+    
+    if (numericRole === '1') {
+      currentRole = 'Super Admin';
+    } else if (numericRole === '2') {
+      currentRole = 'Admin';
+    } else if (numericRole === '4') { 
+      currentRole = 'Astrologer';
+    }
 
-  }, []);
+    setRole(currentRole);
+    console.log("Mapped Role:", currentRole);
+  }, []); 
+
+  useEffect(() => {
+    if (!role || role === 'User') return;
+    const permissions = ROLE_PERMISSIONS[role] || [];
+    
+    if (permissions.includes('*')) {
+      setCurrentView('overview');
+    } else if (permissions.includes('user-management')) {
+      setCurrentView('user-management');
+    } else if (permissions.includes('events')) {
+      setCurrentView('events');
+    } else if (permissions.includes('astrology-dashboard')) {
+      setCurrentView('astrology-dashboard');
+    } else {
+      setCurrentView('user-management'); 
+    }
+  }, [role]);
 
   if (role === 'Astrologer') {
      return <AstrologerDashboard onLogout={onLogout} />;

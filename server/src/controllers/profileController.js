@@ -1,13 +1,9 @@
 import { executeQuery } from "../config/database.js";
 
-//USER FUNCTIONS
-
 export const createProfile = async (req, res) => {
   try {
     const userId = req.user.id;
     const profileData = req.body;
-    
-    // Check if profile already exists
     const existing = await executeQuery("SELECT id FROM profiles WHERE userId = ?", [userId]);
     if (existing.length > 0) {
       return res.status(400).json({ success: false, message: "Profile already exists" });
@@ -50,8 +46,6 @@ export const searchProfiles = async (req, res) => {
     res.status(500).json({ success: false, message: "Search failed" });
   }
 };
-
-//ADMIN FUNCTIONS
 
 export const getPendingProfiles = async (req, res) => {
   try {
