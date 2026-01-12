@@ -12,6 +12,7 @@ import { apiLimiter } from "./middleware/rateLimiter.js";
 import { runMigrations } from "../migrations/run.js";
 import eventRoutes from "./routes/eventRoutes.js";
 import successStoriesRoutes from "./routes/successStoriesRoutes.js";
+import userRoutes from './routes/userRoutes.js';
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+app.use('/api/v1/users', userRoutes);
 
 // ============ UPLOADING ============
 app.use('/uploads', express.static('uploads'));

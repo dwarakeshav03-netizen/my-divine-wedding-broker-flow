@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -11,9 +10,9 @@ import {
 import PremiumButton from '../ui/PremiumButton';
 import { MOCK_COMMUNICATION_LOGS, MOCK_TICKETS } from '../../utils/adminData';
 import { RAASI_LIST } from '../../constants';
+import axios from 'axios';
 
-// ... AdminUser interface remains the same ...
-// Extended AdminUser interface to include ALL profile fields matching UserSettings
+
 interface AdminUser {
   id: string;
   name: string;
@@ -73,13 +72,13 @@ interface AdminUser {
   // Career & Employment
   education?: string;
   college?: string;
-  occupation?: string; // Job Title
+  occupation?: string; 
   employmentStatus?: string;
-  employmentCategory?: string; // Private, Govt, Biz
-  company?: string; // or companyName
+  employmentCategory?: string; 
+  company?: string; 
   designation?: string;
   workType?: string;
-  income?: string; // Annual Salary
+  income?: string; 
   monthlySalary?: string;
   officialAddress?: string;
   
@@ -91,13 +90,13 @@ interface AdminUser {
   // Family
   fatherName?: string;
   motherName?: string;
-  fatherOccupation?: string; // or fatherJob
-  motherOccupation?: string; // or motherJob
+  fatherOccupation?: string; 
+  motherOccupation?: string; 
   fatherMobile?: string;
   fatherEmail?: string;
   motherMobile?: string;
   motherEmail?: string;
-  siblings?: string; // Count
+  siblings?: string; 
   siblingsDetails?: { name: string; gender: string; occupation: string; maritalStatus: string }[];
   familyType?: string;
   familyValues?: string;
@@ -112,16 +111,16 @@ interface AdminUser {
   extraCurricular?: string;
   wakeUpTime?: string;
   sleepTime?: string;
-  about?: string; // Bio
+  about?: string; 
   
   // Uploads
-  photos?: string[]; // Array of URLs
+  photos?: string[]; 
   horoscopeFile?: string;
   bioDataFile?: string;
   bioDataText?: string;
   familyPhoto?: string;
   
-  profileScore?: number; // Total Score
+  profileScore?: number; 
 }
 
 interface AdminUserManagementProps {
@@ -151,58 +150,40 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ initialTab = 
   
   // Modal Tab State
   const [modalTab, setModalTab] = useState<'profile' | 'activity' | 'interactions' | 'messages' | 'support' | 'finance'>('profile');
-  
-  // State for editing plan in modal
   const [editingPlan, setEditingPlan] = useState(false);
-  
-  // Ref for Report Generation
   const reportRef = useRef<HTMLDivElement>(null);
-
-  // Load users from LocalStorage to ensure sync with Login
   useEffect(() => {
-    const loadUsers = () => {
-        const stored = localStorage.getItem('mdm_users');
-        if (stored) {
-            setUsers(JSON.parse(stored));
-        } else {
-            setUsers([]);
+    const loadRealUsers = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:5000/api/v1/users', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data.success) {
+          setUsers(response.data.data);
+          console.log("Successfully loaded users from MySQL Database");
         }
+      } catch (err) {
+        console.error("Failed to load users from DB", err);
+      }
     };
-    loadUsers();
-    
-    // Poll for changes (e.g. user updates password or profile)
-    const interval = setInterval(loadUsers, 2000);
-    return () => clearInterval(interval);
+
+    loadRealUsers();
   }, []);
 
-  // Sync selected user state when main user list updates (to show live profile changes)
-  useEffect(() => {
-      if (selectedUser) {
-          const freshUser = users.find(u => u.id === selectedUser.id);
-          if (freshUser && JSON.stringify(freshUser) !== JSON.stringify(selectedUser)) {
-              setSelectedUser(freshUser);
-          }
-      }
-  }, [users, selectedUser]);
-
-  // --- FILTER LOGIC ---
-  const filteredUsers = users.filter(u => {
-      // 1. Tab Filter
-      let matchesTab = false;
+  const filteredUsers = users.filter((u) => {
+      let matchesTab = true;
       if (activeTab === 'pending') {
           matchesTab = u.status === 'pending';
-      } else {
-          // 'all' tab shows active, suspended, and rejected users (User Database)
-          matchesTab = u.status === 'active' || u.status === 'suspended' || u.status === 'rejected'; 
       }
 
-      // 2. Search Text
       const matchesSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                             u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             u.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             (u.mobile && u.mobile.includes(searchTerm));
 
-      // 3. Advanced Filters
+      
       let matchesAdvanced = true;
       if (showFilters) {
           if (filters.gender !== 'all' && u.gender?.toLowerCase() !== filters.gender.toLowerCase()) matchesAdvanced = false;
@@ -224,7 +205,7 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ initialTab = 
       setSearchTerm('');
   };
 
-  // --- LOGGING HELPER ---
+  
   const logApprovalAction = (action: 'Approved' | 'Rejected', user: AdminUser, type: string) => {
       const newLog = {
           id: `LOG-${Date.now()}`,
@@ -240,38 +221,35 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ initialTab = 
       localStorage.setItem('mdm_approval_logs', JSON.stringify([newLog, ...existingLogs]));
   };
 
-  const handleApprove = () => {
+  const handleApprove = async () => {
       if (!selectedUser) return;
       setIsProcessing(true);
 
-      setTimeout(() => {
-          // Generate Temp Credentials
-          const tempPass = Math.random().toString(36).slice(-8).toUpperCase();
-          
-          // Update User in LocalStorage
-          const updatedUsers = users.map(u => {
-              if (u.id === selectedUser.id) {
-                  return {
-                      ...u,
-                      status: 'active' as const,
-                      password: tempPass, 
-                      requiresReset: true, 
-                      resetCompleted: false,
-                      verified: true
-                  };
+      try {
+          const token = localStorage.getItem('token');
+          const response = await axios.patch(`http://localhost:5000/api/v1/users/status/${selectedUser.id}`, 
+            { status: 'active' },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          if (response.data.success) {
+
+              setGeneratedCreds({ 
+                username: selectedUser.email, 
+                pass: response.data.temporaryPassword || 'Check DB' 
+              });
+              
+              const stored = localStorage.getItem('mdm_users');
+              if (stored) {
+                  setUsers(JSON.parse(stored));
               }
-              return u;
-          });
-
-          localStorage.setItem('mdm_users', JSON.stringify(updatedUsers));
-          
-          // Log the action
-          logApprovalAction('Approved', selectedUser, 'User Registration');
-
-          setUsers(updatedUsers);
-          setGeneratedCreds({ username: selectedUser.email, pass: tempPass });
+              logApprovalAction('Approved', selectedUser, 'User Registration');
+          }
+      } catch (error) {
+          alert("Failed to approve user in database");
+      } finally {
           setIsProcessing(false);
-      }, 1500);
+      }
   };
   
   const handleUpdatePlan = (newPlan: 'free' | 'gold' | 'diamond' | 'platinum') => {
@@ -289,7 +267,7 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ initialTab = 
       alert(`User plan updated to ${newPlan.toUpperCase()}`);
   };
   
-  // --- ID VERIFICATION HANDLERS ---
+
   const handleVerifyId = () => {
       if (!selectedUser) return;
       if (window.confirm(`Approve ${selectedUser.idType} for ${selectedUser.name}?`)) {
@@ -328,43 +306,38 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ initialTab = 
       }
   };
 
-  const handleReject = (e?: React.MouseEvent) => {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      if(!selectedUser) return;
+  const handleReject = async (e?: React.MouseEvent) => {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      if (!selectedUser) return;
       
-      if(window.confirm(`Are you sure you want to reject the application for ${selectedUser.name}?`)) {
-          // Read fresh from LS to avoid stale state issues during rapid updates
-          const currentUsers = JSON.parse(localStorage.getItem('mdm_users') || '[]');
-          
-          // Update status to 'rejected' instead of deleting, so we have a record
-          const updatedUsers = currentUsers.map((u: any) => {
-              if (u.id === selectedUser.id) {
-                  return { ...u, status: 'rejected' };
+      if (window.confirm(`Reject application for ${selectedUser.name}?`)) {
+          try {
+              const token = localStorage.getItem('token');
+              await axios.patch(`http://localhost:5000/api/v1/users/status/${selectedUser.id}`, 
+                { status: 'rejected' },
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+              
+              const stored = localStorage.getItem('mdm_users');
+              if (stored) {
+                  setUsers(JSON.parse(stored));
               }
-              return u;
-          });
-
-          localStorage.setItem('mdm_users', JSON.stringify(updatedUsers));
-          
-          // Log the action
-          logApprovalAction('Rejected', selectedUser, 'User Registration');
-
-          setUsers(updatedUsers);
-          setSelectedUser(null);
+              setSelectedUser(null);
+              logApprovalAction('Rejected', selectedUser, 'User Registration');
+          } catch (error) {
+              alert("Error updating status in DB");
+          }
       }
-  }
+  };
 
   const handleCloseModal = () => {
       setSelectedUser(null);
       setGeneratedCreds(null);
       setEditingPlan(false);
-      setModalTab('profile'); // Reset tab
+      setModalTab('profile');
   };
   
-  // --- MOCK DATA FETCHERS FOR TABS ---
+  
   const getUserTransactions = () => {
      if (!selectedUser) return [];
      const allTxns = JSON.parse(localStorage.getItem('mdm_transactions') || '[]');
