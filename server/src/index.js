@@ -19,24 +19,21 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// ============ CORS MIDDLEWARE ============
+app.use(cors({
+  origin: ["http://localhost:3000"], 
+  methods: ["GET", "POST", "PUT", "DELETE"], 
+  allowedHeaders: ["Content-Type", "Authorization"], 
+}));
 
 // ============ SECURITY MIDDLEWARE ============
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" } // Allows port 3000 to access resources
+  crossOriginResourcePolicy: { policy: "cross-origin" } 
 }));
-
-app.use(
-  cors({
-    origin: (process.env.CORS_ORIGIN || "http://localhost:3000").split(","),
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-app.use('/api/v1/users', userRoutes);
 
 // ============ UPLOADING ============
 app.use('/uploads', express.static('uploads'));
+
 
 // ============ BODY PARSING ============
 app.use(express.json({ limit: "10mb" }));
@@ -66,6 +63,7 @@ app.use("/api/v1/profiles", profileRoutes);
 app.use("/api/v1/connections", connectionRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/success-stories", successStoriesRoutes);
+app.use("/api/v1/users", userRoutes);
 
 // ============ 404 HANDLER ============
 app.use((req, res) => {

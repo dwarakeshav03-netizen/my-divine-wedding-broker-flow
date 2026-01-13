@@ -12,6 +12,9 @@ const ROLES = {
 
 export const loginUser = async (req, res) => {
   try {
+    if (!req.body) {
+      return res.status(400).json({ success: false, message: "Request body is missing" });
+    }
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -84,19 +87,21 @@ export const getCurrentUser = async (req, res) => {
 
 export const addAdminBySuperAdmin = async (req, res) => {
   try {
-    const { email, password, firstName, lastName } = req.body;
+    const { email, password, firstName, lastName, role_id } = req.body;
+    const existing = await executeQuery("SELECT id FROM users WHERE email = ?", [email]);
+    if (existing && existing.length > 0) {
+      return res.status(400).json({ success: false, message: "Error: Email already exists in Database" });
+    }
     const hashedPassword = await hashPassword(password);
     const userId = uuidv4();
-
     await executeQuery(
-      "INSERT INTO users (id, email, password, role, status, firstName, lastName) VALUES (?, ?, ?, ?, 'active', ?, ?)",
-      [userId, email, hashedPassword, ROLES.ADMIN, firstName || 'Admin', lastName || 'User']
+      "INSERT INTO users (id, email, password, role_id, role, status, firstName, lastName) VALUES (?, ?, ?, ?, 'admin', 'active', ?, ?)",
+      [userId, email, hashedPassword, role_id || 2, firstName, lastName]
     );
-
-    res.status(201).json({ success: true, message: "✨ New Admin (Role 2) created successfully!" });
+    res.status(201).json({ success: true, message: "New Admin Created Successfully!" });
   } catch (error) {
     console.error("Add Admin Error:", error);
-    res.status(500).json({ success: false, message: "Failed to create admin" });
+    res.status(500).json({ success: false, message: "Database Error" });
   }
 };
 

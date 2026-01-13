@@ -91,15 +91,10 @@ const AppContent: React.FC = () => {
     
     const role = localStorage.getItem('userRole');
   
-    if (role === '3') {
-        navigate('/dashboard');
-    } else if (role === '2') {
-        navigate('/admin');
-    } else if (role === '1') {
-        navigate('/super-admin');
-    } else {
-        navigate('/'); 
-    }
+    if (role === '1') navigate('/super-admin');
+    else if (role === '2') navigate('/admin');
+    else if (role === '3') navigate('/dashboard'); 
+    else navigate('/');
   };
 
 const handleAdminLoginSuccess = () => {

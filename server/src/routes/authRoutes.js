@@ -5,6 +5,7 @@ import {
   refreshAccessToken,
   logoutUser,
   getCurrentUser,
+  addAdminBySuperAdmin,
 } from "../controllers/authController.js";
 import { authenticateToken,authorizeRole } from "../middleware/auth.js";
 import { loginLimiter, authLimiter } from "../middleware/rateLimiter.js";
@@ -19,6 +20,7 @@ router.post("/login", loginLimiter, loginUser);
 router.post("/refresh-token", authLimiter, refreshAccessToken);
 router.post("/logout", logoutUser);
 router.post('/update-phones', updateUniquePhones);
+router.post('/add-admin', authenticateToken, authorizeRole(1), addAdminBySuperAdmin);
 
 // Protected routes
 router.get("/me", authenticateToken, getCurrentUser);

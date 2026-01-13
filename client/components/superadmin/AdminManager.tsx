@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, Search, Filter, Plus, MoreHorizontal, Shield, Lock, 
@@ -12,14 +13,33 @@ import PremiumButton from '../ui/PremiumButton';
 import { AnimatedInput, AnimatedSelect } from '../profile/ProfileFormElements';
 
 const AdminManager: React.FC = () => {
-  const [admins, setAdmins] = useState<SystemAdmin[]>(MOCK_SYSTEM_ADMINS);
+const [admins, setAdmins] = useState<any[]>([]);
+
+const fetchAdmins = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get('http://localhost:5000/api/v1/users/admins', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    
+    if (response.data.success) {
+      setAdmins(response.data.data); 
+    }
+  } catch (err) {
+    console.error("Failed to fetch real admins");
+  }
+};
+
+useEffect(() => {
+  fetchAdmins();
+}, []);
   const [selectedAdmin, setSelectedAdmin] = useState<SystemAdmin | null>(null);
   const [actionType, setActionType] = useState<'Block' | 'Suspend' | 'Activate' | null>(null);
   const [modalView, setModalView] = useState<'details' | 'logs'>('details');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newAdminData, setNewAdminData] = useState({ name: '', email: '', role: 'Support' });
 
-  // Load from LS
+  
   useEffect(() => {
      const stored = localStorage.getItem('mdm_system_admins');
      if (stored) {
@@ -29,7 +49,6 @@ const AdminManager: React.FC = () => {
      }
   }, []);
 
-  // ... (rest of the logic: updateAdminStatus, handleCreateAdmin, getAdminLogs remain same) ...
   const updateAdminStatus = (id: string, newStatus: SystemAdmin['status']) => {
      const updated = admins.map(a => a.id === id ? { ...a, status: newStatus } : a);
      setAdmins(updated);
@@ -46,34 +65,64 @@ const AdminManager: React.FC = () => {
      setSelectedAdmin(null);
   };
 
-  const handleCreateAdmin = () => {
-     if(!newAdminData.name || !newAdminData.email) return;
-     const newAdmin: SystemAdmin = {
-        id: `ADM-${Math.floor(Math.random() * 1000)}`,
-        name: newAdminData.name,
-        email: newAdminData.email,
-        role: newAdminData.role as any,
-        status: 'Active',
-        lastLogin: 'Never',
-        actionsCount: 0,
-        avatar: `https://ui-avatars.com/api/?name=${newAdminData.name.replace(/\s/g, '+')}&background=random`,
-        permissions: []
-     };
-     const updatedList = [newAdmin, ...admins];
-     setAdmins(updatedList);
-     localStorage.setItem('mdm_system_admins', JSON.stringify(updatedList));
-     const log = {
-        id: `GAL-${Date.now()}`,
-        actorId: 'SA-001', actorName: 'Super Admin', actorRole: 'Super Admin',
-        action: `Created Admin ${newAdminData.role}`, target: newAdmin.id, module: 'Admin Mgmt',
-        timestamp: new Date().toLocaleString(), severity: 'medium', ip: '127.0.0.1'
-     };
-     const logs = JSON.parse(localStorage.getItem('mdm_super_admin_logs') || '[]');
-     localStorage.setItem('mdm_super_admin_logs', JSON.stringify([log, ...logs]));
-     setShowCreateModal(false);
-     setNewAdminData({ name: '', email: '', role: 'Support' });
-     alert(`Admin Credential Created.\n\nUser: ${newAdmin.email}\nPass: secure123 (Default)`);
-  };
+ const handleCreateAdmin = async () => {
+    setIsLoading(true);
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post('http://localhost:5000/api/v1/auth/add-admin', {
+            firstName: newAdminData.name.split(' ')[0],
+            lastName: newAdminData.name.split(' ')[1] || '',
+            email: newAdminData.email,
+            password: 'secure123',
+            role_id: 2 
+        }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data.success) {
+            setIsSuccess(true); 
+        }
+    } catch (err) {
+        alert("Email already exists in Database");
+    } finally {
+        setIsLoading(false);
+    }
+}; 
+
+   const [isLoading, setIsLoading] = useState(false);
+   const [isSuccess, setIsSuccess] = useState(false);
+   const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password:'',
+    roleAssignment: 'Admin (Full Access)' 
+  });
+   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post('http://localhost:5000/api/v1/auth/add-admin', {
+            firstName: formData.fullName.split(' ')[0],
+            lastName: formData.fullName.split(' ').slice(1).join(' ') || '',
+            email: formData.email,
+            password: 'secure123',
+            role_id: 2 
+        }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data.success) {
+            setIsSuccess(true); 
+   
+        }
+    } catch (error: any) {
+        alert(error.response?.data?.message || "Failed to create account");
+    } finally {
+        setIsLoading(true);
+    }
+};
 
   const getAdminLogs = (adminId: string, adminName: string) => {
       const storedLogs = JSON.parse(localStorage.getItem('mdm_approval_logs') || '[]');
@@ -273,29 +322,117 @@ const AdminManager: React.FC = () => {
        </AnimatePresence>
 
        {/* Create Admin Modal */}
-       <AnimatePresence>
-          {showCreateModal && (
-             <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                <motion.div 
-                   initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-                   className="bg-[#1a1b26] border border-white/10 rounded-3xl p-8 max-w-md w-full"
+<AnimatePresence>
+  {showCreateModal && (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <motion.div 
+        initial={{ scale: 0.95, opacity: 0 }} 
+        animate={{ scale: 1, opacity: 1 }} 
+        exit={{ scale: 0.95, opacity: 0 }}
+        className="bg-[#1a1b26] border border-white/10 rounded-3xl p-8 max-w-md w-full relative overflow-hidden"
+      >
+        {!isSuccess ? (
+          <>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white">Create Admin Credentials</h3>
+              <button onClick={() => setShowCreateModal(false)} className="text-gray-500 hover:text-white"><X size={20} /></button>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Full Name */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-400 uppercase">Full Name</label>
+                <div className="relative">
+                  <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                  <input 
+                    type="text" 
+                    value={newAdminData.name} 
+                    onChange={e => setNewAdminData({...newAdminData, name: e.target.value})} 
+                    className="w-full bg-black/30 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white text-sm outline-none focus:border-yellow-500" 
+                    placeholder="e.g. John Doe" 
+                  />
+                </div>
+              </div>
+
+              {/* Email Address */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-400 uppercase">Email Address</label>
+                <div className="relative">
+                  <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                  <input 
+                    type="email" 
+                    value={newAdminData.email} 
+                    onChange={e => setNewAdminData({...newAdminData, email: e.target.value})} 
+                    className="w-full bg-black/30 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white text-sm outline-none focus:border-yellow-500" 
+                    placeholder="admin@divine.com" 
+                  />
+                </div>
+              </div>
+
+              {/* Role Assignment */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-400 uppercase">Role Assignment</label>
+                <select 
+                  value={newAdminData.role} 
+                  onChange={e => setNewAdminData({...newAdminData, role: e.target.value})} 
+                  className="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white text-sm outline-none focus:border-yellow-500 appearance-none"
                 >
-                   <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-xl font-bold text-white">Create Admin Credentials</h3>
-                      <button onClick={() => setShowCreateModal(false)} className="text-gray-500 hover:text-white"><X size={20} /></button>
-                   </div>
-                   <div className="space-y-4">
-                      <div className="space-y-2"><label className="text-xs font-bold text-gray-400 uppercase">Full Name</label><div className="relative"><User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" /><input type="text" value={newAdminData.name} onChange={e => setNewAdminData({...newAdminData, name: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white text-sm outline-none focus:border-yellow-500" placeholder="e.g. John Doe" /></div></div>
-                      <div className="space-y-2"><label className="text-xs font-bold text-gray-400 uppercase">Email Address</label><div className="relative"><Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" /><input type="email" value={newAdminData.email} onChange={e => setNewAdminData({...newAdminData, email: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white text-sm outline-none focus:border-yellow-500" placeholder="admin@divine.com" /></div></div>
-                      <div className="space-y-2"><label className="text-xs font-bold text-gray-400 uppercase">Role Assignment</label><select value={newAdminData.role} onChange={e => setNewAdminData({...newAdminData, role: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white text-sm outline-none focus:border-yellow-500 appearance-none"><option value="Admin">Admin (Full Access)</option><option value="Moderator">Moderator (Content & Reports)</option><option value="Support">Support (Tickets & Users)</option><option value="Finance">Finance (Payments Only)</option></select></div>
-                      <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl mt-4"><div className="flex items-center gap-2 text-yellow-500 text-xs font-bold mb-1"><Key size={14} /> Default Password</div><p className="text-xs text-yellow-200/70">The user will be assigned a temporary password: <span className="font-mono text-white">secure123</span></p></div>
-                      <PremiumButton onClick={handleCreateAdmin} className="w-full mt-4" variant="gradient">Create Account</PremiumButton>
-                   </div>
-                </motion.div>
-             </div>
-          )}
-       </AnimatePresence>
+                  <option value="Admin">Admin (Full Access)</option>
+                  <option value="Moderator">Moderator</option>
+                  <option value="Support">Support</option>
+                </select>
+              </div>
+
+              {/* Default Password Notice */}
+              <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl mt-4">
+                <div className="flex items-center gap-2 text-yellow-500 text-xs font-bold mb-1"><Key size={14} /> Default Password</div>
+                <p className="text-xs text-yellow-200/70">assigned a temporary password: <span className="font-mono text-white">secure123</span></p>
+              </div>
+
+              <PremiumButton onClick={handleCreateAdmin} className="w-full mt-4" variant="gradient">
+                 {isLoading ? 'Creating...' : 'Create Account'}
+              </PremiumButton>
+            </div>
+          </>
+        ) : (
+          /* --- SUCCESS SCREEN --- */
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }} 
+            animate={{ scale: 1, opacity: 1 }}
+            className="text-center py-6 space-y-6"
+          >
+            <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle size={48} className="text-green-500" />
+            </div>
+            
+            <div>
+              <h3 className="text-2xl font-bold text-white">Admin Created!</h3>
+              <p className="text-gray-400 mt-2 text-sm">
+                The account for <span className="text-yellow-500 font-bold">{newAdminData.email}</span> is now live.
+              </p>
+            </div>
+
+            <div className="bg-white/5 p-4 rounded-xl border border-white/10 text-left inline-block w-full">
+              <p className="text-[10px] uppercase font-bold text-gray-500 mb-1 text-center">Login Access Key</p>
+              <p className="text-lg font-mono font-bold text-yellow-500 text-center">secure123</p>
+            </div>
+
+            <button 
+              onClick={() => {
+                setIsSuccess(false);
+                setShowCreateModal(false);
+              }}
+              className="w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl transition-all"
+            >
+              Done
+            </button>
+          </motion.div>
+        )}
+      </motion.div>
     </div>
+  )}
+</AnimatePresence>
+      </div>
   );
 };
 

@@ -25,3 +25,15 @@ export const getAllUsers = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const getAdminsOnly = async (req, res) => {
+  try {
+    const admins = await executeQuery(
+      "SELECT id, firstName, lastName, email, role, role_id, status FROM users WHERE role_id IN (1, 2)", 
+      []
+    );
+    res.json({ success: true, data: admins });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error fetching admins" });
+  }
+};

@@ -33,15 +33,17 @@ export const seedDatabase = async (req, res) => {
 export const updateUniquePhones = async (req, res) => {
     try {
         const users = await executeQuery("SELECT id FROM users WHERE role_id = 3", []);
+
         for (let i = 0; i < users.length; i++) {
-            const uniquePhone = `98765${(10000 + i).toString().substring(1)}`;
+            const uniquePhone = `98765${10000 + i}`;
+            
             await executeQuery(
                 "UPDATE users SET mobileNumber = ? WHERE id = ?",
                 [uniquePhone, users[i].id]
             );
         }
 
-        res.json({ success: true, message: `Updated ${users.length} users with unique phone numbers.` });
+        res.json({ success: true, message: "Success: All users now have 10-digit numbers." });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
