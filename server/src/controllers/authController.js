@@ -131,3 +131,59 @@ export const logoutUser = async (req, res) => {
 export const refreshAccessToken = async (req, res) => {
   res.json({ success: true, message: "Token refreshed" });
 };
+
+
+const generateAlphaNumericCode = () => {
+    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+};
+
+export const requestLoginCode = async (req, res) => {
+  try {
+    const { mobileNumber } = req.body;
+    const last10Digits = mobileNumber.replace(/\D/g, '').slice(-10);
+    const users = await executeQuery(
+      "SELECT id FROM users WHERE mobileNumber LIKE ?", 
+      [`%${last10Digits}`]
+    );
+    
+    if (users.length === 0) return res.status(404).json({ success: false, message: "Number not registered" });
+
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    await executeQuery("UPDATE users SET loginCode = ? WHERE id = ?", [code, users[0].id]);
+
+    res.json({ success: true, message: "Code generated", code: code });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false });
+  }
+};
+
+export const verifyPhoneCode = async (req, res) => {
+  try {
+    const { mobileNumber, code } = req.body;
+    const last10Digits = mobileNumber.replace(/\D/g, '').slice(-10);
+    const users = await executeQuery(
+      "SELECT id, role_id FROM users WHERE mobileNumber LIKE ? AND loginCode = ?", 
+      [`%${last10Digits}`, code]
+    );
+
+    if (users.length === 0) {
+      return res.status(401).json({ success: false, message: "Incorrect Code" });
+    }
+
+    const user = users[0];
+    const { accessToken } = generateTokens(user.id, user.role_id);
+
+    res.json({
+      success: true,
+      data: { accessToken, role: user.role_id } 
+    });
+  } catch (error) {
+    res.status(500).json({ success: false });
+  }
+};

@@ -1,15 +1,10 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, ArrowRight, ChevronLeft, Shield, Check, AlertCircle, Unlock, Smartphone, Lock, Loader2, MessageSquare } from 'lucide-react';
+import { X, Mail, ArrowRight, ChevronLeft, Shield, Check, AlertCircle, Smartphone, Lock, Loader2, MessageSquare, Unlock } from 'lucide-react';
 import axios from 'axios';
 import Logo from './ui/Logo';
-import { AuthService } from '../utils/authService';
-import { COUNTRY_CODES } from '../utils/validation';
 
 const M = motion as any;
-
-// --- ANIMATION CONFIG ---
 const TRANSITION = { duration: 0.4, ease: [0.22, 1, 0.36, 1] };
 
 interface LoginOverlayProps {
@@ -22,136 +17,82 @@ interface LoginOverlayProps {
   initialView?: 'login' | 'register';
 }
 
-type AuthView = 'phone_input' | 'otp_verify' | 'email_login';
+type AuthView = 'phone_input' | 'code_verify' | 'email_login';
 
-// --- SUB-COMPONENTS ---
-const PremiumInput: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { icon?: React.ReactNode, label: string }> = ({ icon, label, ...props }) => (
-  <div className="relative group mb-4">
-    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-600 transition-colors z-10">
-      {icon}
-    </div>
-    <input 
-      {...props}
-      className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:border-purple-600 focus:bg-white dark:focus:bg-black transition-all shadow-sm focus:shadow-lg focus:shadow-purple-500/10 peer"
-      placeholder={label}
-    />
-    <label className="absolute left-12 top-4 text-xs font-bold text-gray-400 uppercase tracking-wider -translate-y-3 scale-90 origin-left transition-all peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-3 peer-focus:scale-90 peer-focus:text-purple-600 pointer-events-none">
-      {label}
-    </label>
-  </div>
-);
-
-// --- MAIN COMPONENT ---
-const LoginOverlay: React.FC<LoginOverlayProps> = ({ isOpen, onClose, onSwitchToAdmin, onSwitchToSignup, onLoginSuccess, initialView = 'login' }) => {
+const LoginOverlay: React.FC<LoginOverlayProps> = ({ isOpen, onClose, onSwitchToAdmin, onSwitchToSignup, onLoginSuccess }) => {
   const [view, setView] = useState<AuthView>('phone_input');
   const [isSuccess, setIsSuccess] = useState(false);
-  
-  // Data State
   const [mobile, setMobile] = useState('');
   const [countryCode, setCountryCode] = useState('+91');
-  
+
   useEffect(() => {
     if (isOpen) {
       setView('phone_input');
       setIsSuccess(false);
     }
-  }, [isOpen, initialView]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <M.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-md"
-        onClick={onClose}
-      />
+      <M.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
       
       <AnimatePresence mode="wait">
         {!isSuccess ? (
-          <M.div 
-            key="card"
-            initial={{ scale: 0.95, opacity: 0, y: 20 }} 
-            animate={{ scale: 1, opacity: 1, y: 0 }} 
-            exit={{ scale: 0.95, opacity: 0, y: 20 }} 
-            transition={TRANSITION} 
-            className="relative w-full max-w-[420px] bg-white dark:bg-[#0a0a0a] rounded-[2.5rem] shadow-2xl overflow-visible z-10 border border-white/20 dark:border-white/5"
-          >
-             {/* Decorative Top Gradient - Inside Card Overflow Hidden Wrapper */}
-             <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden pointer-events-none">
-                <div className="absolute top-0 inset-x-0 h-48 bg-gradient-to-b from-purple-500/10 via-pink-500/5 to-transparent pointer-events-none" />
-             </div>
+          <M.div key="card" initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} className="relative w-full max-w-[420px] bg-white dark:bg-[#0a0a0a] rounded-[2.5rem] shadow-2xl z-10 border border-white/20 overflow-hidden">
              
-             {/* Close Button */}
-             <button onClick={onClose} className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors z-20 text-gray-400 hover:text-gray-900 dark:hover:text-white">
+             <button onClick={onClose} className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 z-20 text-gray-400">
                <X size={20} />
              </button>
 
-             <div className="p-8 pt-12 relative z-10">
-                {/* Header Logo */}
-                <div className="text-center mb-10">
-                   <M.div 
-                      initial={{ scale: 0.8 }} animate={{ scale: 1 }} 
-                      className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-purple-500/30"
-                   >
+             <div className="p-8 pt-12">
+                <div className="text-center mb-8">
+                   <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
                       <Logo className="w-10 h-10" />
-                   </M.div>
-                   <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white tracking-tight">
-                      Welcome Back
-                   </h2>
-                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                      {view === 'otp_verify' ? 'Enter the code sent to your mobile' : 'Login to find your perfect match'}
-                   </p>
+                   </div>
+                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">Welcome Back</h2>
+                   <p className="text-sm text-gray-500 mt-2">Login to find your perfect match</p>
                 </div>
 
                 <AnimatePresence mode="wait">
                    {view === 'phone_input' && (
                       <PhoneLoginView 
-                         key="phone"
-                         mobile={mobile}
-                         setMobile={setMobile}
-                         countryCode={countryCode}
-                         setCountryCode={setCountryCode}
-                         onNext={() => setView('otp_verify')}
+                         mobile={mobile} setMobile={setMobile}
+                         countryCode={countryCode} setCountryCode={setCountryCode}
+                         onNext={() => setView('code_verify')}
                          onSwitchToEmail={() => setView('email_login')}
                          onRegister={onSwitchToSignup}
                       />
                    )}
-                   
-                   {view === 'otp_verify' && (
-                      <OtpVerifyView 
-                         key="otp"
-                         mobile={`${countryCode} ${mobile}`}
+                   {view === 'code_verify' && (
+                      <CodeVerifyView 
+                         mobile={`${countryCode}${mobile}`}
                          onBack={() => setView('phone_input')}
                          onSuccess={() => { setIsSuccess(true); setTimeout(onLoginSuccess, 1500); }}
                       />
                    )}
-
                    {view === 'email_login' && (
                       <EmailLoginView 
-                         key="email"
                          onBack={() => setView('phone_input')}
                          onSuccess={() => { setIsSuccess(true); setTimeout(onLoginSuccess, 1500); }}
                       />
                    )}
-                </AnimatePresence>
+       </AnimatePresence>
 
-                {/* Footer Admin Link */}
-                {view !== 'otp_verify' && (
-                   <div className="mt-8 pt-6 border-t border-gray-100 dark:border-white/5 text-center">
-                      <button 
-                         onClick={onSwitchToAdmin} 
-                         className="text-[10px] uppercase font-bold text-gray-300 dark:text-gray-600 hover:text-purple-600 transition-colors flex items-center justify-center gap-2 mx-auto"
-                      >
-                         <Shield size={12} /> Admin Access
-                      </button>
-                   </div>
-                )}
-             </div>
-          </M.div>
+       {view !== 'code_verify' && (
+          <div className="mt-8 pt-6 border-t border-gray-100 dark:border-white/5 text-center">
+             <button 
+                onClick={onSwitchToAdmin} 
+                className="text-[10px] uppercase font-bold text-gray-300 dark:text-gray-600 hover:text-purple-600 active:text-purple-700 transition-colors flex items-center justify-center gap-2 mx-auto group"
+             >
+                <Shield size={12} className="group-hover:scale-110 transition-transform" /> 
+                Admin Access
+             </button>
+          </div>
+       )}
+    </div>
+ </M.div>
         ) : (
           <SuccessTransition key="success" />
         )}
@@ -160,99 +101,96 @@ const LoginOverlay: React.FC<LoginOverlayProps> = ({ isOpen, onClose, onSwitchTo
   );
 };
 
-// ... Rest of the file (PhoneLoginView, OtpVerifyView, EmailLoginView, SuccessTransition) remains unchanged ...
-// --- VIEW 1: PHONE INPUT ---
-const PhoneLoginView: React.FC<{ 
-  mobile: string, setMobile: (v: string) => void, 
-  countryCode: string, setCountryCode: (v: string) => void,
-  onNext: () => void,
-  onSwitchToEmail: () => void,
-  onRegister?: () => void
-}> = ({ mobile, setMobile, countryCode, setCountryCode, onNext, onSwitchToEmail, onRegister }) => {
+const PhoneLoginView: React.FC<any> = ({ mobile, setMobile, countryCode, setCountryCode, onNext, onSwitchToEmail, onRegister }) => {
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState('');
+ 
+   const isReady = mobile.length === 10;
 
-   const handleSendOtp = async (e: React.FormEvent) => {
+   const handleSendCode = async (e: React.FormEvent) => {
       e.preventDefault();
-      if(mobile.length < 10) {
-         setError('Please enter a valid mobile number');
-         return;
-      }
+      if (!isReady) return;
+      
       setLoading(true);
       setError('');
-      
-      // Optimistic UI: Transition immediately, assume success for better UX
-      onNext();
-      
-      // Fire API call in background
-      AuthService.sendMobileOtp(mobile, countryCode).catch(err => {
-         console.error("Failed to send OTP", err);
-         // Error handling would ideally happen in the next view or revert state
-      });
-      setLoading(false);
+      try {
+         
+         const response = await axios.post('http://localhost:5000/api/v1/auth/request-code', { 
+            mobileNumber: mobile 
+         });
+         
+         if (response.data.success) {
+            (window as any).temp_code = response.data.code; 
+            onNext();
+         }
+      } catch (err) {
+         setError('Number not found in database');
+      } finally { setLoading(false); }
    };
 
    return (
-      <M.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={TRANSITION}>
-         <form onSubmit={handleSendOtp} className="space-y-6">
+      <M.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+         <form onSubmit={handleSendCode} className="space-y-6">
             <div className="space-y-2">
-               <label className="text-xs font-bold text-gray-500 uppercase ml-1">Mobile Number</label>
+               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Mobile Number</label>
                <div className="flex gap-3">
-                  <div className="relative w-24 shrink-0 group">
-                     <select 
-                        value={countryCode} 
-                        onChange={(e) => setCountryCode(e.target.value)}
-                        className="w-full appearance-none bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl py-4 pl-4 pr-8 text-gray-900 dark:text-white font-bold focus:outline-none focus:border-purple-500 transition-all cursor-pointer"
-                     >
-                        {COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
-                     </select>
+                  
+                  <div className="w-20 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl py-4 flex items-center justify-center font-bold text-gray-900 dark:text-white shadow-sm">
+                     {countryCode}
                   </div>
+                  
+                 
                   <div className="relative flex-1 group">
-                     <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-600 transition-colors" size={20} />
+                     <Smartphone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-600 transition-colors" />
                      <input 
                         type="tel" 
-                        value={mobile}
-                        onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))}
-                        className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-gray-900 dark:text-white font-bold text-lg tracking-wide placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-all shadow-sm focus:shadow-lg focus:shadow-purple-500/10"
-                        placeholder="98765 43210"
-                        autoFocus
+                        maxLength={10}
+                        value={mobile} 
+                        onChange={e => setMobile(e.target.value.replace(/\D/g, ''))} 
+                        className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 font-bold text-lg outline-none focus:border-purple-500 transition-all shadow-sm" 
+                        placeholder="98765 10000" 
                      />
                   </div>
                </div>
-               {error && <p className="text-xs text-red-500 font-bold ml-1 flex items-center gap-1"><AlertCircle size={12} /> {error}</p>}
+               {error && <p className="text-[10px] text-red-500 font-bold ml-1 text-center">{error}</p>}
             </div>
 
+            
             <button 
                type="submit" 
-               disabled={loading || mobile.length < 10}
-               className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl font-bold text-lg shadow-xl shadow-purple-500/30 hover:shadow-purple-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group transform active:scale-95"
+               disabled={!isReady || loading} 
+               className={`w-full py-4 rounded-2xl font-bold text-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-500 ${
+                  isReady 
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white cursor-pointer hover:shadow-purple-500/30' 
+                  : 'bg-purple-500/20 text-purple-400/40 cursor-not-allowed border border-purple-500/10'
+               }`}
             >
-               {loading ? <Loader2 className="animate-spin" /> : <>Get OTP <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" /></>}
+               {loading ? <Loader2 className="animate-spin" /> : <>Get Code <ArrowRight size={18} /></>}
             </button>
          </form>
 
          <div className="mt-8 space-y-6">
             <div className="relative text-center">
-               <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200 dark:border-white/10"></div></div>
-               <span className="relative bg-white dark:bg-[#0a0a0a] px-3 text-xs text-gray-500 font-medium uppercase tracking-wider">Or connect with</span>
+               <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100 dark:border-white/10"></div></div>
+               <span className="relative bg-white dark:bg-[#0a0a0a] px-3 text-[10px] text-gray-400 uppercase font-bold tracking-widest">Or Connect With</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-               <button type="button" className="flex items-center justify-center gap-2 py-3 border border-gray-200 dark:border-white/10 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
-                  <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.26.81-.58z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            <div className="grid grid-cols-2 gap-4">
+               <button type="button" className="flex items-center justify-center gap-3 py-3.5 border border-gray-100 dark:border-white/10 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all group">
+                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 group-hover:scale-110 transition-transform" alt="Google" />
                   <span className="text-sm font-bold text-gray-700 dark:text-gray-200">Google</span>
                </button>
-               <button type="button" className="flex items-center justify-center gap-2 py-3 border border-gray-200 dark:border-white/10 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
-                  <svg className="w-5 h-5 text-black dark:text-white group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.05-.48-3.24.02-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74s2.57-.99 4.31-.74c.51.02 2.19.18 3.54 1.96-3.23 1.74-2.61 5.95 1.07 7.24-.67 1.67-1.59 3.24-2.66 4.31-.54.53-1.15 1.15-1.34 1.46zm-2.93-16c.86-1.04 1.55-2.57 1.34-4.08-1.51.13-3.1.88-3.92 1.83-.8.93-1.48 2.44-1.31 3.9 1.63.13 3.09-.76 3.89-1.65z"/></svg>
+               <button type="button" className="flex items-center justify-center gap-3 py-3.5 border border-gray-100 dark:border-white/10 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all group">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" className="w-5 h-5 dark:invert group-hover:scale-110 transition-transform" alt="Apple" />
                   <span className="text-sm font-bold text-gray-700 dark:text-gray-200">Apple</span>
                </button>
             </div>
 
-            <div className="text-center space-y-4">
-               <button onClick={onSwitchToEmail} className="text-xs font-bold text-purple-600 hover:text-purple-700 hover:underline transition-colors">
+            <div className="text-center space-y-3">
+               <button onClick={onSwitchToEmail} className="text-[11px] font-bold text-purple-600 hover:text-purple-700 underline underline-offset-4">
                   Login with Email & Password
                </button>
-               <p className="text-xs text-gray-400">
+               <p className="text-[11px] text-gray-400">
                   New here? <button onClick={onRegister} className="text-gray-900 dark:text-white font-bold hover:underline">Create an account</button>
                </p>
             </div>
@@ -261,140 +199,73 @@ const PhoneLoginView: React.FC<{
    );
 };
 
-// --- VIEW 2: OTP VERIFY ---
-const OtpVerifyView: React.FC<{ mobile: string, onBack: () => void, onSuccess: () => void }> = ({ mobile, onBack, onSuccess }) => {
-   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+// --- ALPHANUMERIC CODE VERIFY  ---
+const CodeVerifyView: React.FC<any> = ({ mobile, onBack, onSuccess }) => {
+   const [codeParts, setCodeParts] = useState(['', '', '', '', '', '']);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState('');
-   const [showDemoNotification, setShowDemoNotification] = useState(false);
+   const [showPopup, setShowPopup] = useState(false);
    const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
    useEffect(() => {
-     // Simulate SMS arrival
-     const timer = setTimeout(() => setShowDemoNotification(true), 1500);
-     const hideTimer = setTimeout(() => setShowDemoNotification(false), 6000);
-     return () => { clearTimeout(timer); clearTimeout(hideTimer); };
+      const t = setTimeout(() => setShowPopup(true), 1000);
+      return () => clearTimeout(t);
    }, []);
 
-   const handleOtpChange = (index: number, value: string) => {
-      if (isNaN(Number(value))) return;
-      const newOtp = [...otp];
-      newOtp[index] = value;
-      setOtp(newOtp);
-      if (value && index < 5) inputsRef.current[index + 1]?.focus();
-   };
-
-   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-      if (e.key === 'Backspace' && !otp[index] && index > 0) inputsRef.current[index - 1]?.focus();
+   const handleChange = (idx: number, val: string) => {
+      const char = val.slice(-1).toUpperCase();
+      const newCode = [...codeParts];
+      newCode[idx] = char;
+      setCodeParts(newCode);
+      if (char && idx < 5) inputsRef.current[idx + 1]?.focus();
    };
 
    const handleVerify = async () => {
-      const code = otp.join('');
-      if (code.length < 6) return;
+      const fullCode = codeParts.join('');
+      if (fullCode.length < 6) return;
       setLoading(true);
-      setError('');
-      
       try {
-         // Use existing Mock Logic but adapt to find user
-         await new Promise(resolve => setTimeout(resolve, 1500));
-         
-         const cleanMobile = mobile.replace(/\s+/g, '');
-         const users = JSON.parse(localStorage.getItem('mdm_users') || '[]');
-         
-         // Mock: Find user or use demo logic
-         let user = users.find((u: any) => u.mobile.replace(/\s+/g, '') === cleanMobile);
-         
-         // Special case for demo numbers or if code matches demo code
-         if (!user && (mobile.includes('9876543210') || mobile.includes('9087549000'))) {
-             user = { email: 'user@divine.com' };
+         const res = await axios.post('http://localhost:5000/api/v1/auth/verify-code', { mobileNumber: mobile, code: fullCode });
+         if (res.data.success) {
+            localStorage.setItem('token', res.data.data.accessToken);
+            localStorage.setItem('userRole', res.data.data.role.toString()); 
+            onSuccess();
          }
-
-         if (user || code === '123456') { // Allow any user in demo with correct code
-             const demoUser = user || { email: 'demo@user.com' };
-             localStorage.setItem('mdm_user_session', demoUser.email);
-             onSuccess();
-         } else {
-             setError('Account not found. Please register first.');
-         }
-      } catch (err) {
-         setError('Invalid Code');
-      } finally {
-         setLoading(false);
-      }
+      } catch (err) { setError('Incorrect Code'); }
+      finally { setLoading(false); }
    };
 
    return (
-      <M.div 
-         initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={TRANSITION}
-         className="relative"
-      >
-         {/* Demo Notification Pop-up - Positioned Absolutely relative to container */}
+      <M.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="relative">
          <AnimatePresence>
-            {showDemoNotification && (
-               <M.div
-                  initial={{ opacity: 0, y: -20, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -20, scale: 0.9 }}
-                  className="absolute -top-32 left-0 right-0 mx-auto w-max z-50 pointer-events-none"
-               >
-                  <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md text-gray-800 dark:text-white px-5 py-3 rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 flex items-center gap-4">
-                     <div className="bg-green-100 dark:bg-green-900/30 p-2.5 rounded-full text-green-600 dark:text-green-400">
-                        <MessageSquare size={20} />
-                     </div>
-                     <div>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-0.5">Messages • Now</p>
-                        <p className="text-sm font-bold">Your OTP is <span className="text-purple-600 dark:text-purple-400 font-mono text-base">123456</span></p>
-                     </div>
+            {showPopup && (
+               <div className="absolute -top-32 left-0 right-0 mx-auto w-max z-50">
+                  <div className="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-purple-100">
+                     <MessageSquare className="text-purple-500" size={18} />
+                     <p className="text-sm font-bold">Your code is <span className="text-purple-600 font-mono">{(window as any).temp_code || 'A1B2C3'}</span></p>
                   </div>
-               </M.div>
+               </div>
             )}
          </AnimatePresence>
 
-         <div className="mb-8">
-            <button onClick={onBack} className="flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 mb-4 transition-colors">
-               <ChevronLeft size={14} /> Change Number
-            </button>
-            <h3 className="font-bold text-lg text-gray-900 dark:text-white">Verify Phone</h3>
-            <p className="text-sm text-gray-500 mt-1">Code sent to <span className="text-gray-900 dark:text-white font-bold">{mobile}</span></p>
-         </div>
+         <button onClick={onBack} className="flex items-center gap-1 text-[10px] font-bold text-gray-400 mb-4 uppercase"><ChevronLeft size={14} /> Change Number</button>
+         <h3 className="font-bold text-lg text-gray-900 dark:text-white">Verify Phone</h3>
+         <p className="text-sm text-gray-500 mt-1 mb-6">Code sent to <span className="font-bold text-gray-900 dark:text-white">{mobile}</span></p>
 
-         {/* OTP Grid Layout for Better Responsiveness */}
          <div className="grid grid-cols-6 gap-2 mb-8">
-            {otp.map((digit, idx) => (
-               <input
-                  key={idx}
-                  ref={el => { inputsRef.current[idx] = el; }}
-                  type="text"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleOtpChange(idx, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(idx, e)}
-                  className="w-full h-12 md:h-14 text-center text-xl md:text-2xl font-bold rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 focus:border-purple-600 focus:bg-white dark:focus:bg-black focus:ring-2 focus:ring-purple-500/10 outline-none transition-all caret-purple-600 shadow-sm"
-                  autoFocus={idx === 0}
-               />
+            {codeParts.map((char, i) => (
+               <input key={i} ref={el => { inputsRef.current[i] = el; }} type="text" value={char} onChange={e => handleChange(i, e.target.value)} className="w-full h-12 text-center text-xl font-bold rounded-xl border border-gray-200 dark:bg-white/5 outline-none focus:border-purple-600" />
             ))}
          </div>
 
-         {error && <p className="text-xs text-center text-red-500 font-bold mb-6 bg-red-50 dark:bg-red-900/10 p-3 rounded-xl border border-red-100 dark:border-red-900/20">{error}</p>}
-
-         <button 
-            onClick={handleVerify}
-            disabled={loading || otp.join('').length < 6}
-            className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl font-bold text-lg shadow-xl shadow-purple-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform active:scale-95"
-         >
-            {loading ? <Loader2 className="animate-spin" /> : 'Verify & Login'}
+         {error && <p className="text-xs text-center text-red-500 font-bold mb-4">{error}</p>}
+         <button onClick={handleVerify} disabled={loading} className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl font-bold text-lg shadow-lg">
+            {loading ? <Loader2 className="animate-spin mx-auto" /> : 'Verify & Login'}
          </button>
-
-         <div className="mt-8 text-center">
-            <p className="text-xs text-gray-400">
-               Didn't receive code? <button className="text-purple-600 font-bold hover:underline transition-colors">Resend in 30s</button>
-            </p>
-         </div>
       </M.div>
    );
 };
 
-// --- VIEW 3: LEGACY EMAIL LOGIN ---
 const EmailLoginView: React.FC<{ onBack: () => void, onSuccess: () => void }> = ({ onBack, onSuccess }) => {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
@@ -472,6 +343,24 @@ const EmailLoginView: React.FC<{ onBack: () => void, onSuccess: () => void }> = 
       </M.div>
    );
 };
+
+// --- PREMIUM INPUT COMPONENT ---
+const PremiumInput: React.FC<{ label: string; type: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; icon: React.ReactNode }> = ({ label, type, value, onChange, icon }) => (
+   <div className="space-y-2">
+      <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase ml-1 block">{label}</label>
+      <div className="relative">
+         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+            {icon}
+         </div>
+         <input 
+            type={type} 
+            value={value} 
+            onChange={onChange} 
+            className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-3 pl-12 pr-4 font-medium outline-none focus:border-purple-500 transition-colors" 
+         />
+      </div>
+   </div>
+);
 
 // --- SUCCESS ANIMATION ---
 const SuccessTransition = () => (
