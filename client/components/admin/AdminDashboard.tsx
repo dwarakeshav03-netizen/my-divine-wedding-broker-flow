@@ -19,6 +19,7 @@ import AdminEvents from './AdminEvents';
 import AdminSuccessStories from './AdminSuccessStories';
 import AstrologerDashboard from './astrology/AstrologerDashboard';
 import { ROLE_PERMISSIONS } from '../../utils/adminData';
+import AdminMatchesReport from './AdminMatchesReport';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -88,6 +89,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, toggleTheme, 
         case 'reports': return <AdminReports />;
         case 'events': return <AdminEvents />;
         case 'success-stories': return <AdminSuccessStories />;
+        case 'matches-report' : return <AdminMatchesReport />;
         
         // 'payments' accessible if role has permission (e.g. Finance)
         case 'payments': return <AdminPayments />;

@@ -48,6 +48,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentView, onChang
             { id: 'user-database', label: t('admin.userDb'), icon: Users, perm: 'user-database' },
             { id: 'events', label: 'Event Management', icon: Calendar, perm: 'events' },
             { id: 'success-stories', label: 'Success Stories', icon: Heart, perm: 'success-stories' },
+            { id: 'matches-report', label: "Matches", icon: FileText, perm: 'reports' }
         ]
     },
     { 

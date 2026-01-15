@@ -13,6 +13,7 @@ import { runMigrations } from "../migrations/run.js";
 import eventRoutes from "./routes/eventRoutes.js";
 import successStoriesRoutes from "./routes/successStoriesRoutes.js";
 import userRoutes from './routes/userRoutes.js';
+import matchRoutes from './routes/matchRoutes.js';
 
 dotenv.config();
 
@@ -64,6 +65,7 @@ app.use("/api/v1/connections", connectionRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/success-stories", successStoriesRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use('/api/v1/matches', matchRoutes);
 
 // ============ 404 HANDLER ============
 app.use((req, res) => {
