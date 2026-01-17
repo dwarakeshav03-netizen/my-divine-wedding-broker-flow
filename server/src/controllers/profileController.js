@@ -1,6 +1,100 @@
 import { executeQuery } from "../config/database.js";
 
+<<<<<<< HEAD
 export const createProfile = async (req, res) => {
+=======
+
+
+import { v4 as uuidv4 } from "uuid";
+export const getProfileById = async (req, res) => {
+  try {
+    const { profileId } = req.params;
+
+    const profiles = await executeQuery(
+      "SELECT * FROM profiles WHERE id = ?",
+      [profileId]
+    );
+
+    if (profiles.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      data: profiles[0],
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch profile",
+    });
+  }
+};
+
+
+export const createProfile = [
+  
+  async (req, res) => {
+    try {
+      console.log("REQ.FILE 👉", req.file);
+      console.log("REQ.BODY 👉", req.body);
+
+      const userId = req.user.userId;
+      
+
+      // 👶 get uploaded photo filename
+      const profilePhoto = req.file ? req.file.filename : null;
+
+      const profileData = {
+        ...req.body,
+        profile_photo: profilePhoto,
+      };
+
+      // Check if profile exists
+      const existingProfile = await executeQuery(
+        "SELECT id FROM profiles WHERE userId = ?",
+        [userId]
+      );
+
+      if (existingProfile.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Profile already exists",
+        });
+      }
+
+      const profileId = uuidv4();
+      const columns = ["id", "userId", ...Object.keys(profileData)];
+      const values = [profileId, userId, ...Object.values(profileData)];
+      const placeholders = columns.map(() => "?").join(",");
+
+      await executeQuery(
+        `INSERT INTO profiles (${columns.join(",")}) VALUES (${placeholders})`,
+        values
+      );
+
+      res.status(201).json({
+        success: true,
+        message: "Profile created successfully",
+        data: { profileId },
+      });
+    } catch (error) {
+      console.error("Create profile error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to create profile",
+        error: error.message,
+      });
+    }
+  },
+];
+
+
+export const updateProfile = async (req, res) => {
+>>>>>>> 694927c (Fix auth and profile controllers and routes)
   try {
     const userId = req.user.id;
     const profileData = req.body;

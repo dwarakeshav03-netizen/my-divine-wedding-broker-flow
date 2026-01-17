@@ -127,6 +127,7 @@ export const registerUser = async (req, res) => {
 export const logoutUser = async (req, res) => {
   res.json({ success: true, message: "Logged out successfully" });
 };
+<<<<<<< HEAD
 
 export const refreshAccessToken = async (req, res) => {
   res.json({ success: true, message: "Token refreshed" });
@@ -187,3 +188,30 @@ export const verifyPhoneCode = async (req, res) => {
     res.status(500).json({ success: false });
   }
 };
+=======
+/* =========================
+   REFRESH TOKEN
+========================= */
+export const refreshAccessToken = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      message: "Token refreshed successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Token refresh failed",
+    });
+  }
+};
+/* =========================
+   ADD ADMIN (DUMMY FIX)
+========================= */
+export const addAdminBySuperAdmin = async (req, res) => {
+  res.json({
+    success: true,
+    message: "Admin created (placeholder)",
+  });
+};
+>>>>>>> 694927c (Fix auth and profile controllers and routes)
