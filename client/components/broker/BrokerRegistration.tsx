@@ -9,6 +9,7 @@ import { AnimatedInput, AnimatedPhoneInput, AnimatedTextArea, FileUpload, TagSel
 import { validateField } from '../../utils/validation';
 import { GoogleGenAI } from "@google/genai";
 import ProfilePreviewModal from "../profile/ProfilePreviewModal";
+import apiClient from "../../utils/apiClient";
 
 
 interface BrokerRegistrationProps {
@@ -132,16 +133,6 @@ const BrokerRegistration: React.FC<BrokerRegistrationProps> = ({ onComplete, onB
     return Object.keys(newErrors).length === 0;
   };
 const handleNext = () => {
-  console.log("NEXT CLICKED, STEP =", step);
-
-  if (step === 4) {
-    console.log("OPENING PREVIEW POPUP");
-    setShowPreview(true);
-    return;
-  }
-
-
-  // OTHER STEPS
   if (!validateStep(step)) return;
 
   setStep(prev => prev + 1);
@@ -150,15 +141,41 @@ const handleNext = () => {
 
 
 
- const handleSubmit = () => {
-  console.log("SUBMIT CONFIRMED FROM POPUP");
-  setLoading(true);
 
-  setTimeout(() => {
-    setLoading(false);
+const handleSubmit = async () => {
+  try {
+    setLoading(true);
+
+    const data = new FormData();
+
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === "licenseFile" || key === "portfolioImages") return;
+
+      if (Array.isArray(value)) {
+        data.append(key, JSON.stringify(value));
+      } else {
+        data.append(key, value as any);
+      }
+    });
+
+    if (formData.licenseFile) {
+      data.append("licenseFile", formData.licenseFile);
+    }
+
+    formData.portfolioImages.forEach(file => {
+      data.append("portfolioImages", file);
+    });
+
+    await apiClient.createProfile(data);
+
     setStep(5);
-  }, 2000);
+  } catch (error) {
+    alert("Profile NOT saved to database");
+  } finally {
+    setLoading(false);
+  }
 };
+
 
 
   // --- RENDERERS ---
@@ -501,8 +518,9 @@ const handleNext = () => {
   type="button"
   onClick={() => {
   if (step === 4) {
-    setShowPreview(true);   // ✅ OPEN POPUP ONLY
-  } else {
+  if (!validateStep(step)) return;
+  setShowPreview(true);
+}else {
     handleNext();           // NEXT STEP
   }
 }}

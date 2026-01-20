@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { createEvent, getEvents, updateEvent } from "../controllers/eventController.js";
 import { authenticateToken, authorizeRole } from "../middleware/auth.js";
-import { upload } from "../middleware/upload.js"; 
+import { upload } from "../middleware/upload.middleware.js";
+
 
 const router = Router();
 

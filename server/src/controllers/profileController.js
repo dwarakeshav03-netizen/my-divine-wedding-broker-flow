@@ -38,30 +38,34 @@ export const getProfileById = async (req, res) => {
 export const createProfile = [
   async (req, res) => {
     try {
-      console.log("REQ.FILE 👉", req.file);
+      console.log("REQ.FILE 👉", req.files);
       console.log("REQ.BODY 👉", req.body);
       console.log("REQ.USER 👉", req.user);
 
       const userId = req.user.id;
 
-      const profilePhoto = req.file ? req.file.filename : null;
+      const licenseFile = req.files?.licenseFile?.[0]?.filename || null;
 
-      const profileData = {
-        ...req.body,
-        profile_photo: profilePhoto,
-      };
 
-      const existingProfile = await executeQuery(
-        "SELECT id FROM profiles WHERE userId = ?",
-        [userId]
-      );
+     const profileData = {
+  profile_for: req.body.profile_for,
+  name: req.body.name,
+  gender: req.body.gender,
+  dob: req.body.dob,
+  age: req.body.age,
+  religion: req.body.religion,
+  caste: req.body.caste,
+  location: req.body.location,
+  marital_status: req.body.marital_status,
+  education: req.body.education,
+  profession: req.body.profession,
+  income: req.body.income,
+  height: req.body.height,
+  weight: req.body.weight,
+  licenseFile: licenseFile,
+};
 
-      if (existingProfile.length > 0) {
-        return res.status(400).json({
-          success: false,
-          message: "Profile already exists",
-        });
-      }
+      
 
       const profileId = uuidv4();
       const columns = ["id", "userId", ...Object.keys(profileData)];

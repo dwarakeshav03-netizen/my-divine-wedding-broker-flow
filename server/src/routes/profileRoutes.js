@@ -1,4 +1,9 @@
 import { Router } from "express";
+import { upload } from "../middleware/upload.middleware.js";
+
+
+
+
 import {
   createProfile,
   getProfile,
@@ -15,7 +20,16 @@ const router = Router();
 router.get("/search", searchProfiles);
 
 // * User Protected Routes *
-router.post("/", authenticateToken, createProfile);
+router.post(
+  "/",
+  authenticateToken,
+  upload.fields([
+    { name: "licenseFile", maxCount: 1 },
+    { name: "portfolioImages", maxCount: 10 },
+  ]),
+  createProfile
+);
+
 router.get("/me", authenticateToken, getProfile);
 
 // * Admin Only Routes *

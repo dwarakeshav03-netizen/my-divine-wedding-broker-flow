@@ -297,25 +297,21 @@ const [demoOtp, setDemoOtp] = useState('');
     }
   };
 
-  const handleVerify = async (code: string) => {
-    setIsVerifying(true);
-    setApiError(null);
+ const handleVerify = async (code: string) => {
+  setIsVerifying(true);
+  setApiError(null);
 
- if (code !== demoOtp) {
-  setApiError('Invalid OTP. Use the demo code shown above.');
+  if (code !== demoOtp) {
+    setApiError('Invalid OTP. Use the demo code shown above.');
+    setIsVerifying(false);
+    return;
+  }
+
+  setStep('verified');
+  onVerified(true);
   setIsVerifying(false);
-  return;
-}
+};
 
-setStep('verified');
-onVerified(true);
-setIsVerifying(false);
-return;
-
-
-
-  
-  };
 
   return (
     <div className="space-y-4 mb-6">
@@ -469,7 +465,9 @@ export const MobileOtpVerifier: React.FC<any> = ({ mobile, mobileCode, onMobileC
  };
 
 export const AadhaarVerifier: React.FC<any> = ({ aadhaar, onChange, onVerified, error, verified }) => {
-   const [step, setStep] = useState<'input' | 'verify' | 'verified'>('input');
+  const [demoOtp, setDemoOtp] = useState('');
+ 
+  const [step, setStep] = useState<'input' | 'verify' | 'verified'>('input');
    const [isVerifying, setIsVerifying] = useState(false);
    const [apiError, setApiError] = useState<string | null>(null);
  
@@ -488,21 +486,25 @@ export const AadhaarVerifier: React.FC<any> = ({ aadhaar, onChange, onVerified, 
    };
  
    const handleVerify = async (code: string) => {
-     setIsVerifying(true);
-     setApiError(null);
+  setIsVerifying(true);
+  setApiError(null);
+
+  // DEMO alpha-numeric OTP validation
+  if (code !== demoOtp) {
+    setApiError('Invalid OTP. Use the demo code shown above.');
+    setIsVerifying(false);
+    return;
+  }
+
+  setStep('verified');
+  onVerified(true);
+  setIsVerifying(false);
+};
 
     
 
-     try {
-         await AuthService.verifyAadhaarOtp(aadhaar.replace(/\s/g, ''), code);
-         setStep('verified');
-         onVerified(true);
-     } catch (err: any) {
-         setApiError(err.message || 'Invalid Aadhaar OTP');
-     } finally {
-         setIsVerifying(false);
-     }
-   };
+    
+   
  
    return (
      <div className="space-y-4 mb-6">
@@ -543,7 +545,7 @@ export const AadhaarVerifier: React.FC<any> = ({ aadhaar, onChange, onVerified, 
   onCancel={() => setStep('input')} 
   target={`UIDAI ending ${aadhaar.slice(-4)}`} 
   isVerifying={isVerifying}
-  onDemoOtp={() => {}}
+  onDemoOtp={setDemoOtp}
 />
 
          </div>

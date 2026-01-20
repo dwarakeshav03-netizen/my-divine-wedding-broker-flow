@@ -1,4 +1,7 @@
 
+
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -15,6 +18,7 @@ import { validateField, calculateAge } from '../../utils/validation';
 import { RAASI_LIST, NAKSHATRA_LIST } from '../../constants';
 import Logo from '../ui/Logo';
 import useTranslation from '../../hooks/useTranslation';
+import ProfilePreviewModal from "../profile/ProfilePreviewModal";
 
 // ... interface and constants ...
 interface ProfileCreationWizardProps {
@@ -56,6 +60,7 @@ const ProfileCreationWizard: React.FC<ProfileCreationWizardProps> = ({ onComplet
   const [direction, setDirection] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -239,7 +244,8 @@ const ProfileCreationWizard: React.FC<ProfileCreationWizardProps> = ({ onComplet
     if (validateStep(currentStepIdx)) {
        setDirection(1);
        if (currentStepIdx === STEPS.length - 1) {
-          handleSubmit();
+          setShowPreview(true);
+
        } else {
           setCurrentStepIdx(prev => prev + 1);
        }
@@ -251,34 +257,27 @@ const ProfileCreationWizard: React.FC<ProfileCreationWizardProps> = ({ onComplet
     setCurrentStepIdx(prev => prev - 1);
   };
 
-  const handleSubmit = async () => {
-     setIsSubmitting(true);
-     // Simulate API
-     await new Promise(r => setTimeout(r, 2000));
-     
-     const fullName = `${formData.firstName} ${formData.lastName}`;
-     // Save Mock Data
-     const newUser = {
-        id: `USR-${Date.now()}`,
-        name: fullName,
-        email: formData.email,
-        mobile: `${formData.mobileCode} ${formData.mobile}`,
-        role: 'user',
-        status: 'active',
-        plan: 'free',
-        verified: aadhaarVerified, // SAVE VERIFICATION STATUS
-        isVerified: aadhaarVerified, // Duplicate for safety in some components
-        avatar: formData.photo ? URL.createObjectURL(formData.photo) : `https://ui-avatars.com/api/?name=${fullName.replace(/\s/g, '+')}&background=random&color=fff`,
-        ...formData
-     };
-     
-     const users = JSON.parse(localStorage.getItem('mdm_users') || '[]');
-     localStorage.setItem('mdm_users', JSON.stringify([newUser, ...users]));
-     localStorage.setItem('mdm_user_session', newUser.email);
+const handleSubmit = () => {
+  setIsSubmitting(true);
 
-     setIsSubmitting(false);
-     setIsSuccess(true);
+  // create profile object
+  const profile = {
+    id: Date.now(), // simple unique id
+    createdAt: new Date().toISOString(),
+    ...formData,
   };
+
+  // save to localStorage
+  localStorage.setItem("mdm_profile", JSON.stringify(profile));
+
+  // optional: mark profile as created
+  localStorage.setItem("mdm_hasProfile", "true");
+
+  setIsSubmitting(false);
+  setIsSuccess(true);
+};
+
+
 
   // --- ANIMATION VARIANTS ---
   const variants = {
@@ -707,7 +706,19 @@ const ProfileCreationWizard: React.FC<ProfileCreationWizardProps> = ({ onComplet
 
           </div>
        </div>
+       {showPreview && (
+  <ProfilePreviewModal
+    data={formData}
+    onClose={() => setShowPreview(false)}
+    onConfirm={() => {
+      setShowPreview(false);
+      handleSubmit();
+    }}
+  />
+)}
+
     </div>
+    
   );
 };
 

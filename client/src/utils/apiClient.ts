@@ -1,15 +1,23 @@
 // API Client Service for Divine Matrimony Backend
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+const API_BASE_URL = 'http://localhost:5000/api/v1';
+
+
 
 class APIClient {
+  baseURL: string;
+accessToken: string;
+refreshToken: string;
+
+  
+
   constructor() {
     this.baseURL = API_BASE_URL;
-    this.accessToken = localStorage.getItem('mdm_accessToken');
-    this.refreshToken = localStorage.getItem('mdm_refreshToken');
+    this.accessToken = localStorage.getItem('mdm_accessToken') || '';
+    this.refreshToken = localStorage.getItem('mdm_refreshToken') || '';
   }
 
-  setTokens(accessToken, refreshToken) {
+  setTokens(accessToken: string, refreshToken: string) {
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
     localStorage.setItem('mdm_accessToken', accessToken);
@@ -17,8 +25,8 @@ class APIClient {
   }
 
   clearTokens() {
-    this.accessToken = null;
-    this.refreshToken = null;
+    this.accessToken = '';
+    this.refreshToken = '';
     localStorage.removeItem('mdm_accessToken');
     localStorage.removeItem('mdm_refreshToken');
     localStorage.removeItem('mdm_userId');
@@ -41,9 +49,14 @@ class APIClient {
       headers
     };
 
-    if (data) {
-      options.body = JSON.stringify(data);
-    }
+    if (data instanceof FormData) {
+  delete headers['Content-Type'];
+  options.body = data;
+} else if (data) {
+  headers['Content-Type'] = 'application/json';
+  options.body = JSON.stringify(data);
+}
+
 
     try {
       const response = await fetch(url, options);
@@ -101,9 +114,18 @@ class APIClient {
     return this.request('POST', '/auth/register', userData);
   }
 
-  login(email, password) {
-    return this.request('POST', '/auth/login', { email, password });
-  }
+ async login(email, password) {
+  const res = await this.request('POST', '/auth/login', { email, password });
+
+  const { accessToken, refreshToken, role } = res.data; // ✅ FIX
+
+  localStorage.setItem("mdm_accessToken", accessToken);
+  localStorage.setItem("mdm_refreshToken", refreshToken);
+  localStorage.setItem("mdm_userRole", String(role)); // ✅ SAFE
+
+  return res;
+}
+
 
   logout() {
     const data = { refreshToken: this.refreshToken };
