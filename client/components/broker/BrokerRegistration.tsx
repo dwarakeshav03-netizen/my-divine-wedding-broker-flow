@@ -8,6 +8,8 @@ import PremiumButton from '../ui/PremiumButton';
 import { AnimatedInput, AnimatedPhoneInput, AnimatedTextArea, FileUpload, TagSelector, AnimatedSelect, EmailOtpVerifier } from '../profile/ProfileFormElements';
 import { validateField } from '../../utils/validation';
 import { GoogleGenAI } from "@google/genai";
+import ProfilePreviewModal from "../profile/ProfilePreviewModal";
+
 
 interface BrokerRegistrationProps {
   onComplete: () => void;
@@ -27,6 +29,9 @@ const COMMUNITIES = ['Iyer', 'Iyengar', 'Mudaliar', 'Nadar', 'Vanniyar', 'Chetti
 const BrokerRegistration: React.FC<BrokerRegistrationProps> = ({ onComplete, onBack }) => {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+
+
   const [aiAnalysis, setAiAnalysis] = useState<{ status: 'idle' | 'analyzing' | 'valid' | 'invalid', message: string }>({ status: 'idle', message: '' });
   const [emailVerified, setEmailVerified] = useState(false);
 
@@ -121,32 +126,40 @@ const BrokerRegistration: React.FC<BrokerRegistrationProps> = ({ onComplete, onB
       if (!formData.pricingModel) newErrors.pricingModel = "Pricing Model is required";
     }
 
-    if (currentStep === 4) {
-      if (!formData.agreedToTerms) newErrors.terms = "You must agree to the Terms & Conditions";
-    }
+    
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+const handleNext = () => {
+  console.log("NEXT CLICKED, STEP =", step);
 
-  const handleNext = () => {
-    if (validateStep(step)) {
-      if (step === 4) {
-        handleSubmit();
-      } else {
-        setStep(prev => prev + 1);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }
-  };
+  if (step === 4) {
+    console.log("OPENING PREVIEW POPUP");
+    setShowPreview(true);
+    return;
+  }
 
-  const handleSubmit = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setStep(5); // Success View
-    }, 2000);
-  };
+
+  // OTHER STEPS
+  if (!validateStep(step)) return;
+
+  setStep(prev => prev + 1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+
+
+ const handleSubmit = () => {
+  console.log("SUBMIT CONFIRMED FROM POPUP");
+  setLoading(true);
+
+  setTimeout(() => {
+    setLoading(false);
+    setStep(5);
+  }, 2000);
+};
+
 
   // --- RENDERERS ---
 
@@ -471,18 +484,7 @@ const BrokerRegistration: React.FC<BrokerRegistrationProps> = ({ onComplete, onB
                         </div>
                      </div>
                      
-                     <div className="pt-4 border-t border-gray-200 dark:border-white/10">
-                        <label className="flex items-start gap-3 cursor-pointer group">
-                           <div className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.agreedToTerms ? 'bg-purple-600 border-purple-600' : 'border-gray-400 group-hover:border-purple-500'}`}>
-                              {formData.agreedToTerms && <CheckCircle size={14} className="text-white" />}
-                           </div>
-                           <input type="checkbox" className="hidden" checked={formData.agreedToTerms} onChange={() => handleChange('agreedToTerms', !formData.agreedToTerms)} />
-                           <span className="text-gray-600 dark:text-gray-300 text-xs leading-relaxed">
-                              I confirm that the details provided are accurate. I agree to the <a href="#" className="text-purple-600 font-bold hover:underline">Platform Terms & Conditions</a> and <a href="#" className="text-purple-600 font-bold hover:underline">Ethical Guidelines</a> for brokers. I understand that false information may lead to account suspension.
-                           </span>
-                        </label>
-                        {errors.terms && <p className="text-xs text-red-500 font-bold mt-2 ml-8">{errors.terms}</p>}
-                     </div>
+                     
                   </div>
                </motion.div>
             )}
@@ -495,17 +497,50 @@ const BrokerRegistration: React.FC<BrokerRegistrationProps> = ({ onComplete, onB
 
       {step < 5 && (
          <div className="mt-8 flex justify-end">
-            <PremiumButton 
-               onClick={handleNext} 
-               disabled={loading}
-               variant="gradient" 
-               className="!px-10"
-               icon={loading ? <Loader2 className="animate-spin" /> : step === 4 ? <CheckCircle size={18} /> : <ArrowRight size={18} />}
-            >
-               {loading ? 'Submitting...' : step === 4 ? 'Submit Application' : 'Next Step'}
-            </PremiumButton>
+          <PremiumButton
+  type="button"
+  onClick={() => {
+  if (step === 4) {
+    setShowPreview(true);   // ✅ OPEN POPUP ONLY
+  } else {
+    handleNext();           // NEXT STEP
+  }
+}}
+
+
+  disabled={loading}
+  variant="gradient"
+  className="!px-10"
+  icon={
+    loading
+      ? <Loader2 className="animate-spin" />
+      : step === 4
+        ? <CheckCircle size={18} />
+        : <ArrowRight size={18} />
+  }
+>
+  {loading
+    ? 'Submitting...'
+    : step === 4
+      ? 'Create Profile'
+      : 'Next Step'}
+</PremiumButton>
+
+
          </div>
       )}
+         {showPreview && (
+  <ProfilePreviewModal
+    data={formData}
+    onClose={() => setShowPreview(false)}
+    onConfirm={() => {
+      setShowPreview(false);
+      handleSubmit();
+    }}
+  />
+)}
+
+
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import ParentDashboard from "./components/dashboard/ParentDashboard";
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -93,7 +94,10 @@ const AppContent: React.FC = () => {
   
     if (role === '1') navigate('/super-admin');
     else if (role === '2') navigate('/admin');
-    else if (role === '3') navigate('/dashboard'); 
+    else if (role === '3') {
+  localStorage.setItem('mdm_currentView', 'dashboard');
+  setView('dashboard');
+}
     else navigate('/');
   };
 
@@ -139,6 +143,9 @@ const handleSuperAdminLoginSuccess = () => {
   };
 
   const isPublicView = ['landing', 'faq', 'communities', 'company', 'stories', 'membership-public', 'contact', 'disclaimer', 'matching'].includes(view);
+if (view === 'dashboard') {
+  return <ParentDashboard />;
+}
 
   return (
     <div className="relative min-h-screen text-gray-900 dark:text-white font-sans overflow-x-hidden">
@@ -250,13 +257,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<AppContent />} />
 
                 
-                <Route path="/dashboard" element={
-                  <ProtectedRoute allowedRoles={[1, 2, 3]}>
-                    <Suspense fallback={<WeddingLoader />}>
-                       <UserDashboard onLogout={() => window.location.href = '/'} />
-                    </Suspense>
-                  </ProtectedRoute>
-                } />
+                
 
                 {/* PROTECTED ADMIN (Role 2) */}
                 <Route path="/admin" element={

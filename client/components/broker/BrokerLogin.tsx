@@ -27,6 +27,7 @@ const BrokerLogin: React.FC<BrokerLoginProps> = ({ onBack, onLoginSuccess }) => 
   const [currentImage, setCurrentImage] = useState(0);
   const [formData, setFormData] = useState({ email: '', password: '', otp: '', licenseId: '' });
   
+
   // Gemini Verification State
   const [verificationResult, setVerificationResult] = useState<{valid: boolean; message: string} | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -102,7 +103,10 @@ const BrokerLogin: React.FC<BrokerLoginProps> = ({ onBack, onLoginSuccess }) => 
     return (
       <div className="fixed inset-0 z-50 bg-[#0f0518] text-white font-sans overflow-y-auto custom-scrollbar">
          <div className="min-h-screen py-10 px-4">
-            <BrokerRegistration onComplete={onLoginSuccess} onBack={() => setStep('login')} />
+            <div>
+  <BrokerRegistration onComplete={onLoginSuccess} onBack={() => setStep('login')} />
+</div>
+
          </div>
       </div>
     );

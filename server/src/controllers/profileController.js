@@ -1,11 +1,9 @@
 import { executeQuery } from "../config/database.js";
-
-<<<<<<< HEAD
-export const createProfile = async (req, res) => {
-=======
-
-
 import { v4 as uuidv4 } from "uuid";
+
+/* =======================
+   GET PROFILE BY ID
+======================= */
 export const getProfileById = async (req, res) => {
   try {
     const { profileId } = req.params;
@@ -34,18 +32,18 @@ export const getProfileById = async (req, res) => {
   }
 };
 
-
+/* =======================
+   CREATE PROFILE
+======================= */
 export const createProfile = [
-  
   async (req, res) => {
     try {
       console.log("REQ.FILE 👉", req.file);
       console.log("REQ.BODY 👉", req.body);
+      console.log("REQ.USER 👉", req.user);
 
-      const userId = req.user.userId;
-      
+      const userId = req.user.id;
 
-      // 👶 get uploaded photo filename
       const profilePhoto = req.file ? req.file.filename : null;
 
       const profileData = {
@@ -53,7 +51,6 @@ export const createProfile = [
         profile_photo: profilePhoto,
       };
 
-      // Check if profile exists
       const existingProfile = await executeQuery(
         "SELECT id FROM profiles WHERE userId = ?",
         [userId]
@@ -92,36 +89,57 @@ export const createProfile = [
   },
 ];
 
-
+/* =======================
+   UPDATE PROFILE
+======================= */
 export const updateProfile = async (req, res) => {
->>>>>>> 694927c (Fix auth and profile controllers and routes)
   try {
     const userId = req.user.id;
-    const profileData = req.body;
-    const existing = await executeQuery("SELECT id FROM profiles WHERE userId = ?", [userId]);
-    if (existing.length > 0) {
-      return res.status(400).json({ success: false, message: "Profile already exists" });
-    }
+    const updateData = req.body;
 
-    const query = `INSERT INTO profiles SET ?`;
-    await executeQuery(query, { ...profileData, userId });
-    
-    res.status(201).json({ success: true, message: "Profile created successfully" });
+    const fields = Object.keys(updateData)
+      .map(key => `${key} = ?`)
+      .join(", ");
+
+    const values = [...Object.values(updateData), userId];
+
+    await executeQuery(
+      `UPDATE profiles SET ${fields}, updatedAt = NOW() WHERE userId = ?`,
+      values
+    );
+
+    res.json({
+      success: true,
+      message: "Profile updated successfully",
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Failed to create profile", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Failed to update profile",
+      error: error.message,
+    });
   }
 };
 
+/* =======================
+   GET PROFILE (LOGGED USER)
+======================= */
 export const getProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const profile = await executeQuery("SELECT * FROM profiles WHERE userId = ?", [userId]);
+    const profile = await executeQuery(
+      "SELECT * FROM profiles WHERE userId = ?",
+      [userId]
+    );
     res.json({ success: true, data: profile[0] });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
+/* =======================
+   SEARCH PROFILES
+======================= */
 export const searchProfiles = async (req, res) => {
   try {
     const { religion, caste, location, minAge, maxAge } = req.query;
@@ -141,12 +159,15 @@ export const searchProfiles = async (req, res) => {
   }
 };
 
+/* =======================
+   ADMIN – PENDING PROFILES
+======================= */
 export const getPendingProfiles = async (req, res) => {
   try {
     const query = `
-      SELECT p.*, u.firstName, u.lastName, u.avatar 
-      FROM profiles p 
-      JOIN users u ON p.userId = u.id 
+      SELECT p.*, u.firstName, u.lastName, u.avatar
+      FROM profiles p
+      JOIN users u ON p.userId = u.id
       WHERE p.isVerified = 0 OR p.isVerified IS NULL
       ORDER BY p.createdAt DESC
     `;
@@ -157,10 +178,13 @@ export const getPendingProfiles = async (req, res) => {
   }
 };
 
+/* =======================
+   VERIFY PROFILE
+======================= */
 export const verifyProfile = async (req, res) => {
   try {
     const { profileId } = req.params;
-    const result = await executeQuery(
+    await executeQuery(
       "UPDATE profiles SET isVerified = 1, updatedAt = NOW() WHERE id = ?",
       [profileId]
     );
@@ -170,10 +194,13 @@ export const verifyProfile = async (req, res) => {
   }
 };
 
+/* =======================
+   ADMIN STATS
+======================= */
 export const getAdminStats = async (req, res) => {
   try {
     const statsQuery = `
-      SELECT 
+      SELECT
         (SELECT COUNT(*) FROM users) as totalUsers,
         (SELECT COUNT(*) FROM profiles WHERE isVerified = 0 OR isVerified IS NULL) as pendingProfiles,
         (SELECT COUNT(*) FROM connections WHERE status = 'accepted') as totalMatches

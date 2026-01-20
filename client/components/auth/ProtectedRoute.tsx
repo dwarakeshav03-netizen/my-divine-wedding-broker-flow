@@ -7,21 +7,20 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
-    
-    const role = parseInt(localStorage.getItem('userRole') || '0');
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('mdm_accessToken');
+  const role = parseInt(localStorage.getItem('mdm_userRole') || '0');
 
- 
-    if (!token) {
-        return <Navigate to="/" replace />;
-    }
+  // not logged in
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
 
-    
-    if (!allowedRoles.includes(role)) {
-        return <Navigate to="/" replace />;
-    }
+  // logged in but role not allowed
+  if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+    return <Navigate to="/" replace />;
+  }
 
-    return <>{children}</>;
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

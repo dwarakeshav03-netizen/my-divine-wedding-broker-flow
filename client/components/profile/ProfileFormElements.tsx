@@ -5,6 +5,14 @@ import { Check, Upload, AlertCircle, X, ChevronDown, Mail, Lock, RefreshCw, Chec
 import { PATTERNS, COUNTRY_CODES, formatCurrency, validateFile } from '../../utils/validation';
 import { AuthService } from '../../utils/authService';
 import { SuccessTick } from '../ui/SuccessTick';
+const generateAlphaNumericOTP = (length = 6) => {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789@#";
+  let otp = "";
+  for (let i = 0; i < length; i++) {
+    otp += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return otp;
+};
 
 const M = motion as any;
 
@@ -135,12 +143,19 @@ export const AnimatedPhoneInput: React.FC<any> = ({ label, value, countryCode, o
 
 // --- OTP VERIFIER BASE ---
 const OtpInput: React.FC<{ 
-  onVerify: (otp: string) => void, 
+  onVerify: (otp: string) => void,
   onCancel: () => void,
   target: string,
-  isVerifying: boolean
-}> = ({ onVerify, onCancel, target, isVerifying }) => {
+  isVerifying: boolean,
+  onDemoOtp: (otp: string) => void
+}> = ({ onVerify, onCancel, target, isVerifying, onDemoOtp }) => {
+
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [demoOtp] = useState(generateAlphaNumericOTP());
+useEffect(() => {
+  onDemoOtp(demoOtp);
+}, []);
+
   const [timer, setTimer] = useState(300); // 5 minutes
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const [showDemoNotification, setShowDemoNotification] = useState(false);
@@ -160,7 +175,8 @@ const OtpInput: React.FC<{
   }, []);
 
   const handleOtpChange = (index: number, value: string) => {
-    if (isNaN(Number(value))) return;
+    if (!/^[A-Za-z0-9@#]$/.test(value)) return;
+
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
@@ -200,7 +216,8 @@ const OtpInput: React.FC<{
                     </div>
                     <div>
                     <p className="text-[9px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-0.5">SMS • Now</p>
-                    <p className="text-xs font-bold">Your OTP is <span className="text-purple-600 dark:text-purple-400 font-mono text-sm">123456</span></p>
+                    <p className="text-xs font-bold">Your OTP is <span className="text-purple-600 dark:text-purple-400 font-mono text-sm">{demoOtp}</span>
+</p>
                     </div>
                 </div>
             </M.div>
@@ -214,7 +231,7 @@ const OtpInput: React.FC<{
       <p className="text-xs text-gray-500 mb-2">Enter the 6-digit code sent to your device.</p>
       
       <p className="text-[10px] text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/20 px-2 py-1 rounded w-fit mb-4 font-mono font-bold">
-         Demo Code: 123456
+         Demo Code: {demoOtp}
       </p>
       
       <div className="grid grid-cols-6 gap-2 mb-6">
@@ -260,9 +277,11 @@ const OtpInput: React.FC<{
 };
 
 export const EmailOtpVerifier: React.FC<any> = ({ email, onEmailChange, onVerified, error, verified }) => {
+  
   const [step, setStep] = useState<'input' | 'verify' | 'verified'>('input');
   const [isVerifying, setIsVerifying] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+const [demoOtp, setDemoOtp] = useState('');
 
   useEffect(() => { if(verified) setStep('verified'); }, [verified]);
 
@@ -282,24 +301,20 @@ export const EmailOtpVerifier: React.FC<any> = ({ email, onEmailChange, onVerifi
     setIsVerifying(true);
     setApiError(null);
 
-    if (code === '123456') {
-        setTimeout(() => {
-            setStep('verified');
-            onVerified(true);
-            setIsVerifying(false);
-        }, 500); 
-        return;
-    }
+ if (code !== demoOtp) {
+  setApiError('Invalid OTP. Use the demo code shown above.');
+  setIsVerifying(false);
+  return;
+}
 
-    try {
-        await AuthService.verifyEmailOtp(email, code);
-        setStep('verified');
-        onVerified(true);
-    } catch (err: any) {
-        setApiError(err.message || 'Verification failed');
-    } finally {
-        setIsVerifying(false);
-    }
+setStep('verified');
+onVerified(true);
+setIsVerifying(false);
+return;
+
+
+
+  
   };
 
   return (
@@ -332,11 +347,13 @@ export const EmailOtpVerifier: React.FC<any> = ({ email, onEmailChange, onVerifi
         <>
             {apiError && <div className="text-red-500 text-xs font-bold px-4 mb-2">{apiError}</div>}
             <OtpInput 
-              onVerify={handleVerify} 
-              onCancel={() => setStep('input')} 
-              target={email}
-              isVerifying={isVerifying}
-            />
+  onVerify={handleVerify}
+  onCancel={() => setStep('input')}
+  target={email}
+  isVerifying={isVerifying}
+  onDemoOtp={setDemoOtp}
+/>
+
         </>
       )}
 
@@ -356,6 +373,8 @@ export const EmailOtpVerifier: React.FC<any> = ({ email, onEmailChange, onVerifi
 };
 
 export const MobileOtpVerifier: React.FC<any> = ({ mobile, mobileCode, onMobileChange, onCodeChange, onVerified, error, verified }) => {
+  const [demoOtp, setDemoOtp] = useState('');
+
    const [step, setStep] = useState<'input' | 'verify' | 'verified'>('input');
    const [isVerifying, setIsVerifying] = useState(false);
    const [apiError, setApiError] = useState<string | null>(null);
@@ -375,28 +394,24 @@ export const MobileOtpVerifier: React.FC<any> = ({ mobile, mobileCode, onMobileC
    };
  
    const handleVerify = async (code: string) => {
-     setIsVerifying(true);
-     setApiError(null);
+  setIsVerifying(true);
+  setApiError(null);
 
-    if (code === '123456') {
-        setTimeout(() => {
-            setStep('verified');
-            onVerified(true);
-            setIsVerifying(false);
-        }, 500);
-        return;
-    }
+  if (code !== demoOtp) {
+    setApiError('Invalid OTP. Use the demo code shown above.');
+    setIsVerifying(false);
+    return;
+  }
 
-     try {
-         await AuthService.verifyMobileOtp(mobile, code);
-         setStep('verified');
-         onVerified(true);
-     } catch (err: any) {
-         setApiError(err.message || 'Invalid code');
-     } finally {
-         setIsVerifying(false);
-     }
-   };
+  setStep('verified');
+  onVerified(true);
+  setIsVerifying(false);
+};
+
+  
+
+     
+   
  
    return (
      <div className="space-y-4 mb-6">
@@ -428,11 +443,13 @@ export const MobileOtpVerifier: React.FC<any> = ({ mobile, mobileCode, onMobileC
          <>
              {apiError && <div className="text-red-500 text-xs font-bold px-4 mb-2">{apiError}</div>}
              <OtpInput 
-               onVerify={handleVerify} 
-               onCancel={() => setStep('input')} 
-               target={`${mobileCode} ${mobile}`} 
-               isVerifying={isVerifying}
-             />
+  onVerify={handleVerify} 
+  onCancel={() => setStep('input')} 
+  target={`${mobileCode} ${mobile}`} 
+  isVerifying={isVerifying}
+  onDemoOtp={setDemoOtp}
+/>
+
          </>
        )}
  
@@ -474,14 +491,7 @@ export const AadhaarVerifier: React.FC<any> = ({ aadhaar, onChange, onVerified, 
      setIsVerifying(true);
      setApiError(null);
 
-    if (code === '123456') {
-        setTimeout(() => {
-            setStep('verified');
-            onVerified(true);
-            setIsVerifying(false);
-        }, 500);
-        return;
-    }
+    
 
      try {
          await AuthService.verifyAadhaarOtp(aadhaar.replace(/\s/g, ''), code);
@@ -529,11 +539,13 @@ export const AadhaarVerifier: React.FC<any> = ({ aadhaar, onChange, onVerified, 
              <h4 className="text-sm font-bold text-orange-900 dark:text-orange-300 mb-2">Aadhaar Authentication</h4>
              {apiError && <div className="text-red-500 text-xs font-bold mb-2">{apiError}</div>}
              <OtpInput 
-               onVerify={handleVerify} 
-               onCancel={() => setStep('input')} 
-               target={`UIDAI ending ${aadhaar.slice(-4)}`} 
-               isVerifying={isVerifying}
-             />
+  onVerify={handleVerify} 
+  onCancel={() => setStep('input')} 
+  target={`UIDAI ending ${aadhaar.slice(-4)}`} 
+  isVerifying={isVerifying}
+  onDemoOtp={() => {}}
+/>
+
          </div>
        )}
  

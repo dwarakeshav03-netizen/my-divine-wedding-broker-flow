@@ -7,6 +7,7 @@ const M = motion as any;
 interface PremiumButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
+  type?: "button" | "submit";   // ✅ ADD THIS
   variant?: 'primary' | 'secondary' | 'glass' | 'outline' | 'gradient';
   className?: string;
   icon?: React.ReactNode;
@@ -14,9 +15,11 @@ interface PremiumButtonProps {
   disabled?: boolean;
 }
 
+
 const PremiumButton: React.FC<PremiumButtonProps> = ({ 
   children, 
   onClick, 
+  type = "button", 
   variant = 'primary', 
   className = '',
   icon,
@@ -78,6 +81,7 @@ const PremiumButton: React.FC<PremiumButtonProps> = ({
   return (
     <M.button
       ref={ref}
+      type={type}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       onMouseMove={handleMouseMove}
